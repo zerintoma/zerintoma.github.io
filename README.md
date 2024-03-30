@@ -6,10 +6,15 @@
     font-size: 16px;
     font-weight: bold;
   }
+  .centered {
+    text-align: center;
+  }
 </style>
 
-<div align="center">
+<div class="centered">
   Hello, I am Zerin Toma.  
+  <br/>
   This is my personal portfolio where I will be adding my projects as I complete them  
+  <br/>
   <a href="https://linkedin.com/zerin-toma" style="text-decoration: underline; color: white;">My LinkedIn</a>  
 </div>
