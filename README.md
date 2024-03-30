@@ -1,14 +1,3 @@
-# Zerin Toma - Homepage
-
-Hello, my name is Zerin Toma.  
-I am an aspiring software engineer,  
-excited to get into the field of STEM.  
-I will be adding any projects I create to this page.  
-Feel free to contact me on [LinkedIn](https://www.linkedin.com/in/zerin-toma)!
-
----
-
-## HTML & CSS Code:
 
 ```html
 <!DOCTYPE html>
