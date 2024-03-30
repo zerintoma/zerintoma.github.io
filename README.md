@@ -1,9 +1,11 @@
-<center>
+<p align="center">
+  Hello, I am Zerin Toma.
+</p>
 
-Hello, I am Zerin Toma.
+<p align="center">
+  This is my personal portfolio where I will be adding my projects as I complete them.
+</p>
 
-This is my personal portfolio where I will be adding my projects as I complete them.
-
-</center>
-
-For more information, you can visit my LinkedIn profile [here](https://www.linkedin.com/in/zerin-toma/).
+<p align="center">
+  [Visit my LinkedIn profile](https://www.linkedin.com/in/zerin-toma/)
+</p>
