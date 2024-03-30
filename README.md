@@ -17,4 +17,7 @@
   This is my personal portfolio where I will be adding my projects as I complete them  
   <br/>
   <a href="https://linkedin.com/zerin-toma" style="text-decoration: underline; color: white;">My LinkedIn</a>  
+  <br/>
+  <a href="https://zerintoma.github.io" style="color: white;">zerintoma.github.io</a>
 </div>
+
