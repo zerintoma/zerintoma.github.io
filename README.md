@@ -1,7 +1,15 @@
-<div style="background-color:#A94064; color:white; font-family: 'Times New Roman'; font-size: 13px; font-weight: bold; text-align: center; padding: 20px;">
+<style>
+  body {
+    background-color: #A94064;
+    color: white;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 16px;
+    font-weight: bold;
+  }
+</style>
 
-Hello, I am Zerin Toma.  
-This is my personal portfolio where I will be adding my projects as I complete them  
-[<u>My LinkedIn</u>](https://linkedin.com/zerin-toma)
-
+<div align="center">
+  Hello, I am Zerin Toma.  
+  This is my personal portfolio where I will be adding my projects as I complete them  
+  <a href="https://linkedin.com/zerin-toma" style="text-decoration: underline; color: white;">My LinkedIn</a>  
 </div>
