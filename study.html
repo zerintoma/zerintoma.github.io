@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cute Note Taking</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        .home-link {
+            text-decoration: underline;
+            cursor: pointer;
+            color: #ff69b4;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .home-link:hover {
+            color: #d1508f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="home-link" href="https://zerintoma.github.io" target="_blank">Home</a>
+        <h1>Jot down anything you like!</h1>
+        <div class="controls">
+            <div class="control-group">
+                <label for="noteFont">Font:</label>
+                <select id="noteFont" onchange="changeFont()">
+                    <option value="Comic Sans MS">Comic Sans MS</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="'Indie Flower', cursive">Indie Flower</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="noteColor">Text Color:</label>
+                <input type="color" id="noteColor" onchange="changeNoteColor()">
+            </div>
+            <div class="control-group">
+                <label for="noteSize">Text Size:</label>
+                <input type="number" id="noteSize" min="10" max="50" value="14" onchange="changeNoteSize()">
+            </div>
+            <div class="control-group">
+                <button onclick="changeAlignment('left')">Left</button>
+                <button onclick="changeAlignment('center')">Center</button>
+                <button onclick="changeAlignment('right')">Right</button>
+                <button onclick="changeAlignment('')">Regular</button>
+            </div>
+            <div class="control-group">
+                <button onclick="toggleBulletPoints()">Bullet Points</button>
+                <button onclick="toggleChecklist()">Checklist</button>
+                <button onclick="addTable()">Add Table</button>
+                <button onclick="addEmoji('😊')">😊</button>
+            </div>
+            <div class="control-group">
+                <label for="backgroundColor">Background Color:</label>
+                <input type="color" id="backgroundColor" onchange="changeBackgroundColor()" value="#ffd3e6">
+            </div>
+        </div>
+        <div id="noteArea" contenteditable="true" onfocus="clearPlaceholder()" onblur="restorePlaceholder()">Type here!</div>
+    </div>
+    
+    
+
+    <script>
+        function clearPlaceholder() {
+            var noteArea = document.getElementById("noteArea");
+            if (noteArea.innerHTML === "Type here!") {
+                noteArea.innerHTML = "";
+            }
+        }
+
+        function restorePlaceholder() {
+            var noteArea = document.getElementById("noteArea");
+            if (noteArea.innerHTML === "") {
+                noteArea.innerHTML = "Type here!";
+            }
+        }
+
+        function goToHomePage() {
+            window.location.href = "https://zerintoma.github.io";
+        }
+
+        function changeFont() {
+            var font = document.getElementById("noteFont").value;
+            document.getElementById("noteArea").style.fontFamily = font;
+        }
+
+        function changeNoteColor() {
+            var color = document.getElementById("noteColor").value;
+            document.getElementById("noteArea").style.color = color;
+        }
+
+        function changeNoteSize() {
+            var size = document.getElementById("noteSize").value + "px";
+            document.getElementById("noteArea").style.fontSize = size;
+        }
+
+        function changeAlignment(alignment) {
+            document.getElementById("noteArea").style.textAlign = alignment;
+        }
+
+        function toggleBulletPoints() {
+            document.execCommand("insertUnorderedList", false, null);
+        }
+
+        function toggleChecklist() {
+            document.execCommand("insertOrderedList", false, null);
+        }
+
+        function addTable() {
+            var table = "<table border='1'><tr><td>Column 1</td><td>Column 2</td></tr><tr><td></td><td></td></tr></table>";
+            document.execCommand("insertHTML", false, table);
+        }
+
+        function addEmoji(emoji) {
+            document.execCommand("insertText", false, emoji);
+        }
+
+        function changeBackgroundColor() {
+            var color = document.getElementById("backgroundColor").value;
+            document.getElementById("noteArea").style.backgroundColor = color;
+        }
+    </script>
+</body>
+</html>
