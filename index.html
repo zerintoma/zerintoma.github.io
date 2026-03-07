@@ -705,6 +705,7 @@
             font-size: 12px;
             color: var(--text-dim);
             opacity: 0.6;
+            line-height: 1.8;
         }
 
         .blink-dot {
@@ -1059,27 +1060,17 @@
             </div>
 
             <div class="project-grid reveal">
-                <!-- Typing Test Project Card -->
-                <a class="project-card" href="https://zerintoma.github.io/typing-test.html" target="_blank" rel="noopener noreferrer">
-                    <div class="project-card-header">
-                        <span class="project-icon">⌨️</span>
-                        <span class="project-arrow">↗</span>
-                    </div>
-                    <div class="project-tag-row">
-                        <span class="project-tag tag-cyan">HTML</span>
-                        <span class="project-tag tag-mag">CSS</span>
-                        <span class="project-tag tag-gold">JavaScript</span>
-                    </div>
-                    <div class="project-title">A Letter to Zern</div>
-                    <p class="project-desc">A handcrafted typing speed test styled as a vintage parchment letter — inspired by the epistolary novel <em>Ella Minnow Pea</em>. Track your WPM and accuracy as you write through a letter where banned letters are slowly disappearing.</p>
-                </a>
 
-                <!-- Coming Soon Placeholder -->
-                <div class="coming-soon-card reveal">
-                    <div class="cs-label"><span class="blink-dot"></span>// More incoming</div>
-                    <h3>New Projects Loading...</h3>
-                    <p>Currently building — check back soon.</p>
+                <!-- Coming Soon — full width spanning both columns -->
+                <div class="coming-soon-card" style="grid-column: 1 / -1;">
+                    <div class="cs-label"><span class="blink-dot"></span>// Active development</div>
+                    <h3>Projects in Progress</h3>
+                    <p>
+                        Several projects currently in active development across web, Python, and creative tech.<br>
+                        Check back soon — or follow along on GitHub.
+                    </p>
                 </div>
+
             </div>
         </section>
 
