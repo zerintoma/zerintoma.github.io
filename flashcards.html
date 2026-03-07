@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flashcards ✏️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Indie+Flower&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:   #ff87ab;
+      --yellow: #ffe066;
+      --mint:   #7de8c8;
+      --lavender: #c9b1ff;
+      --blue:   #87c4ff;
+      --peach:  #ffb347;
+      --bg:     #fff8f0;
+      --text:   #3a2d4f;
+      --card-shadow: 0 6px 24px rgba(180,130,200,0.18);
+    }
+
+    body {
+      font-family: 'Caveat', cursive;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 80px;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(255,135,171,0.13) 0%, transparent 40%),
+        radial-gradient(circle at 90% 70%, rgba(135,196,255,0.15) 0%, transparent 40%),
+        radial-gradient(circle at 50% 90%, rgba(201,177,255,0.12) 0%, transparent 40%);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: var(--pink);
+      text-align: center;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      font-size: 1.3rem;
+      color: #a07cb0;
+      margin-bottom: 36px;
+      text-align: center;
+    }
+
+    /* ---- SETUP SCREEN ---- */
+    #setup-screen {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .setup-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px 36px;
+      width: 100%;
+      box-shadow: var(--card-shadow);
+      border: 2px solid rgba(201,177,255,0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .setup-card label {
+      font-size: 1.5rem;
+      color: var(--text);
+      text-align: center;
+    }
+
+    .cute-input {
+      width: 100%;
+      font-family: 'Caveat', cursive;
+      font-size: 1.4rem;
+      padding: 12px 18px;
+      border: 2.5px solid var(--lavender);
+      border-radius: 16px;
+      outline: none;
+      color: var(--text);
+      background: #fdf6ff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      text-align: center;
+    }
+    .cute-input:focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 3px rgba(255,135,171,0.15);
+    }
+    .cute-input::placeholder { color: #cbb8e0; }
+
+    .num-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .num-btn {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      border: 2px solid var(--lavender);
+      background: #fdf6ff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text);
+      font-family: 'Caveat', cursive;
+      line-height: 1;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .num-btn:hover { background: var(--lavender); transform: scale(1.1); }
+
+    .num-display {
+      font-size: 1.8rem;
+      min-width: 40px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .hint {
+      font-size: 1.05rem;
+      color: #c4a8d8;
+      text-align: center;
+    }
+
+    .btn-main {
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem;
+      font-weight: 700;
+      padding: 14px 40px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      letter-spacing: 0.5px;
+    }
+    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+    .btn-main:active { transform: translateY(0); }
+
+    .btn-pink   { background: var(--pink);     color: white; }
+    .btn-mint   { background: var(--mint);     color: #2a5a4a; }
+    .btn-yellow { background: var(--yellow);   color: #7a5c00; }
+    .btn-purple { background: var(--lavender); color: #4a2d8a; }
+
+    /* ---- BUILD SCREEN ---- */
+    #build-screen { display: none; width: 100%; max-width: 560px; flex-direction: column; align-items: center; gap: 0; }
+
+    .deck-title-display {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--lavender);
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .card-builder {
+      background: white;
+      border-radius: 24px;
+      padding: 26px 28px;
+      width: 100%;
+      margin-bottom: 18px;
+      box-shadow: var(--card-shadow);
+      border: 2.5px solid rgba(201,177,255,0.35);
+      position: relative;
+    }
+
+    .card-num-badge {
+      position: absolute;
+      top: -13px; left: 24px;
+      background: var(--lavender);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 2px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .field-label {
+      font-size: 1.1rem;
+      color: #b09ac8;
+      margin-bottom: 4px;
+    }
+
+    .card-builder textarea {
+      width: 100%;
+      font-family: 'Caveat', cursive;
+      font-size: 1.35rem;
+      padding: 10px 14px;
+      border: 2px solid var(--lavender);
+      border-radius: 14px;
+      outline: none;
+      resize: none;
+      color: var(--text);
+      background: #fdf6ff;
+      transition: border-color 0.2s;
+      margin-bottom: 14px;
+      min-height: 68px;
+    }
+    .card-builder textarea:focus { border-color: var(--pink); }
+    .card-builder textarea::placeholder { color: #d4bfe8; }
+
+    .divider-line {
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--lavender), transparent);
+      margin: 4px 0 16px;
+    }
+
+    #add-card-btn {
+      font-family: 'Caveat', cursive;
+      font-size: 1.3rem;
+      padding: 12px 28px;
+      border: 2.5px dashed var(--mint);
+      border-radius: 20px;
+      background: transparent;
+      cursor: pointer;
+      color: #2a9a7a;
+      transition: background 0.15s, transform 0.1s;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+    #add-card-btn:hover { background: rgba(125,232,200,0.18); transform: scale(1.02); }
+
+    #finish-btn-wrap { width: 100%; display: flex; justify-content: center; margin-top: 8px; }
+
+    /* ---- STUDY SCREEN ---- */
+    #study-screen { display: none; width: 100%; max-width: 560px; flex-direction: column; align-items: center; gap: 0; }
+
+    .study-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--pink);
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .progress-text {
+      font-size: 1.2rem;
+      color: #b09ac8;
+      margin-bottom: 32px;
+    }
+
+    /* Flashcard flip */
+    .flip-scene {
+      width: 100%;
+      max-width: 480px;
+      height: 240px;
+      perspective: 900px;
+      cursor: pointer;
+      margin-bottom: 28px;
+    }
+
+    .flip-card {
+      width: 100%; height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(.4,0,.2,1);
+    }
+
+    .flip-card.flipped { transform: rotateY(180deg); }
+
+    .flip-face {
+      position: absolute; inset: 0;
+      border-radius: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      padding: 30px 28px;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+    }
+
+    .flip-front {
+      background: linear-gradient(135deg, #fff0fa 0%, #f5eeff 100%);
+      border: 3px solid var(--pink);
+    }
+
+    .flip-back {
+      background: linear-gradient(135deg, #f0fff8 0%, #eef5ff 100%);
+      border: 3px solid var(--mint);
+      transform: rotateY(180deg);
+    }
+
+    .face-label {
+      font-size: 0.95rem;
+      color: #c4a8d8;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .face-text {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .tap-hint {
+      font-size: 1rem;
+      color: #d0b8e8;
+      margin-top: 10px;
+    }
+
+    .nav-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .nav-arrow {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: 2.5px solid var(--lavender);
+      background: white;
+      font-size: 1.6rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+      color: var(--text);
+      font-family: 'Caveat', cursive;
+    }
+    .nav-arrow:hover { background: var(--lavender); color: white; transform: scale(1.08); }
+    .nav-arrow:disabled { opacity: 0.3; cursor: default; transform: none; background: white; }
+
+    .shuffle-btn {
+      font-family: 'Caveat', cursive;
+      font-size: 1.2rem;
+      padding: 10px 26px;
+      border: 2.5px solid var(--yellow);
+      border-radius: 50px;
+      background: white;
+      cursor: pointer;
+      color: #7a5c00;
+      transition: background 0.15s, transform 0.1s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .shuffle-btn:hover { background: var(--yellow); transform: scale(1.04); }
+
+    .start-over-btn {
+      font-family: 'Caveat', cursive;
+      font-size: 1.15rem;
+      padding: 10px 26px;
+      border: 2.5px dashed var(--pink);
+      border-radius: 50px;
+      background: transparent;
+      cursor: pointer;
+      color: var(--pink);
+      transition: background 0.15s;
+      margin-top: 10px;
+    }
+    .start-over-btn:hover { background: rgba(255,135,171,0.1); }
+
+    /* Card color variants */
+    .color-0 .flip-front { border-color: var(--pink);     background: linear-gradient(135deg, #fff0fa, #f8eeff); }
+    .color-1 .flip-front { border-color: var(--blue);     background: linear-gradient(135deg, #f0f6ff, #e8f5ff); }
+    .color-2 .flip-front { border-color: var(--peach);    background: linear-gradient(135deg, #fff8f0, #fff0e0); }
+    .color-3 .flip-front { border-color: var(--lavender); background: linear-gradient(135deg, #f5f0ff, #ede6ff); }
+    .color-4 .flip-front { border-color: var(--mint);     background: linear-gradient(135deg, #f0fff8, #e6fff5); }
+
+    /* dots progress */
+    .dots-row {
+      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px;
+    }
+    .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #e0d4f0;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .dot.active { background: var(--pink); transform: scale(1.3); }
+    .dot.seen   { background: var(--mint); }
+  </style>
+</head>
+<body>
+
+<h1>✏️ flashcards!</h1>
+<p class="subtitle">study smarter, not harder 🌸</p>
+
+<!-- ===== SETUP SCREEN ===== -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <label for="deck-name">what's the name of your deck? 📚</label>
+    <input class="cute-input" id="deck-name" type="text" placeholder="e.g. Biology Chapter 3" maxlength="60"/>
+
+    <label>how many cards do you want?</label>
+    <div class="num-row">
+      <button class="num-btn" id="minus-btn">−</button>
+      <span class="num-display" id="num-display">5</span>
+      <button class="num-btn" id="plus-setup-btn">+</button>
+    </div>
+    <p class="hint">(don't worry, you can add more later too!)</p>
+  </div>
+
+  <button class="btn-main btn-pink" id="start-btn">let's go! 🎉</button>
+</div>
+
+<!-- ===== BUILD SCREEN ===== -->
+<div id="build-screen">
+  <div class="deck-title-display" id="build-title"></div>
+  <div id="cards-container"></div>
+  <button id="add-card-btn">＋ add another card</button>
+  <div id="finish-btn-wrap">
+    <button class="btn-main btn-mint" id="finish-btn">i'm done! ✨</button>
+  </div>
+</div>
+
+<!-- ===== STUDY SCREEN ===== -->
+<div id="study-screen">
+  <div class="study-title" id="study-title"></div>
+  <div class="progress-text" id="progress-text"></div>
+
+  <div class="dots-row" id="dots-row"></div>
+
+  <div class="flip-scene" id="flip-scene" onclick="flipCard()">
+    <div class="flip-card" id="flip-card">
+      <div class="flip-face flip-front">
+        <div class="face-label">✏️ front</div>
+        <div class="face-text" id="card-front-text"></div>
+        <div class="tap-hint">tap to flip! 🔄</div>
+      </div>
+      <div class="flip-face flip-back">
+        <div class="face-label">💡 definition</div>
+        <div class="face-text" id="card-back-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-arrow" id="prev-btn" onclick="prevCard()">←</button>
+    <button class="shuffle-btn" onclick="shuffleCards()">🔀 shuffle</button>
+    <button class="nav-arrow" id="next-btn" onclick="nextCard()">→</button>
+  </div>
+
+  <button class="start-over-btn" onclick="startOver()">🔁 make a new deck</button>
+</div>
+
+<script>
+  let cardCount = 5;
+  let deckName = '';
+  let cards = [];       // { front, back }
+  let studyCards = [];
+  let currentIndex = 0;
+  let seen = new Set();
+
+  const numDisplay    = document.getElementById('num-display');
+  const setupScreen   = document.getElementById('setup-screen');
+  const buildScreen   = document.getElementById('build-screen');
+  const studyScreen   = document.getElementById('study-screen');
+  const cardsContainer = document.getElementById('cards-container');
+
+  // ---- SETUP ----
+  document.getElementById('minus-btn').addEventListener('click', () => {
+    if (cardCount > 1) { cardCount--; numDisplay.textContent = cardCount; }
+  });
+  document.getElementById('plus-setup-btn').addEventListener('click', () => {
+    cardCount++; numDisplay.textContent = cardCount;
+  });
+
+  document.getElementById('start-btn').addEventListener('click', () => {
+    deckName = document.getElementById('deck-name').value.trim();
+    if (!deckName) { alert('give your deck a name first! 🌸'); return; }
+    setupScreen.style.display = 'none';
+    buildScreen.style.display = 'flex';
+    document.getElementById('build-title').textContent = '📖 ' + deckName;
+    for (let i = 0; i < cardCount; i++) addCardBuilder();
+  });
+
+  // ---- BUILD ----
+  let builderCount = 0;
+
+  function addCardBuilder() {
+    builderCount++;
+    const n = builderCount;
+    const div = document.createElement('div');
+    div.className = 'card-builder';
+    div.dataset.id = n;
+    div.innerHTML = `
+      <div class="card-num-badge">card ${n}</div>
+      <div class="field-label">✏️ front (what you'll see first)</div>
+      <textarea id="front-${n}" placeholder="e.g. What is photosynthesis?" rows="2"></textarea>
+      <div class="divider-line"></div>
+      <div class="field-label">💡 back (the definition / answer)</div>
+      <textarea id="back-${n}" placeholder="e.g. The process by which plants..." rows="2"></textarea>
+    `;
+    cardsContainer.appendChild(div);
+  }
+
+  document.getElementById('add-card-btn').addEventListener('click', () => {
+    addCardBuilder();
+    // scroll to new card
+    setTimeout(() => {
+      cardsContainer.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+  });
+
+  document.getElementById('finish-btn').addEventListener('click', () => {
+    cards = [];
+    const builders = cardsContainer.querySelectorAll('.card-builder');
+    let empty = false;
+    builders.forEach(b => {
+      const id = b.dataset.id;
+      const front = document.getElementById('front-' + id).value.trim();
+      const back  = document.getElementById('back-'  + id).value.trim();
+      if (!front && !back) return; // skip totally blank cards
+      if (!front || !back) { empty = true; }
+      else cards.push({ front, back });
+    });
+    if (cards.length === 0) { alert('fill in at least one card! 🌸'); return; }
+    if (empty) {
+      const go = confirm('some cards are missing a front or back — skip those and continue?');
+      if (!go) return;
+    }
+    startStudy();
+  });
+
+  // ---- STUDY ----
+  function startStudy() {
+    studyCards = [...cards];
+    currentIndex = 0;
+    seen = new Set();
+    buildScreen.style.display = 'none';
+    studyScreen.style.display = 'flex';
+    document.getElementById('study-title').textContent = '🌟 ' + deckName;
+    renderCard();
+    renderDots();
+  }
+
+  function renderCard() {
+    const card = studyCards[currentIndex];
+    document.getElementById('card-front-text').textContent = card.front;
+    document.getElementById('card-back-text').textContent  = card.back;
+    // reset flip
+    document.getElementById('flip-card').classList.remove('flipped');
+    // color
+    const scene = document.getElementById('flip-scene');
+    scene.className = 'flip-scene';
+    document.getElementById('flip-card').className = 'flip-card color-' + (currentIndex % 5);
+    // progress
+    document.getElementById('progress-text').textContent =
+      `card ${currentIndex + 1} of ${studyCards.length}`;
+    // buttons
+    document.getElementById('prev-btn').disabled = (currentIndex === 0);
+    document.getElementById('next-btn').disabled = (currentIndex === studyCards.length - 1);
+    // dots
+    renderDots();
+  }
+
+  function renderDots() {
+    const row = document.getElementById('dots-row');
+    row.innerHTML = '';
+    studyCards.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === currentIndex ? ' active' : (seen.has(i) ? ' seen' : ''));
+      row.appendChild(d);
+    });
+  }
+
+  function flipCard() {
+    seen.add(currentIndex);
+    document.getElementById('flip-card').classList.toggle('flipped');
+    renderDots();
+  }
+
+  function nextCard() {
+    if (currentIndex < studyCards.length - 1) {
+      seen.add(currentIndex);
+      currentIndex++;
+      renderCard();
+    }
+  }
+
+  function prevCard() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderCard();
+    }
+  }
+
+  function shuffleCards() {
+    for (let i = studyCards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [studyCards[i], studyCards[j]] = [studyCards[j], studyCards[i]];
+    }
+    currentIndex = 0;
+    seen = new Set();
+    renderCard();
+    // little bounce feedback
+    const btn = document.querySelector('.shuffle-btn');
+    btn.style.transform = 'scale(1.15) rotate(-5deg)';
+    setTimeout(() => btn.style.transform = '', 250);
+  }
+
+  function startOver() {
+    studyScreen.style.display = 'none';
+    setupScreen.style.display = 'flex';
+    cardsContainer.innerHTML = '';
+    builderCount = 0;
+    cardCount = 5;
+    numDisplay.textContent = 5;
+    document.getElementById('deck-name').value = '';
+  }
+
+  // keyboard nav
+  document.addEventListener('keydown', e => {
+    if (studyScreen.style.display === 'flex') {
+      if (e.key === 'ArrowRight') nextCard();
+      if (e.key === 'ArrowLeft')  prevCard();
+      if (e.key === ' ') { e.preventDefault(); flipCard(); }
+    }
+  });
+</script>
+</body>
+</html>
