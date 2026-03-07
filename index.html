@@ -4,72 +4,835 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+    <title>Zerin Toma — Portfolio</title>
+    <style>
+        /* ===== ROOT VARIABLES ===== */
+        :root {
+            --bg: #050a0f;
+            --bg2: #080f18;
+            --surface: #0d1b2a;
+            --cyan: #00f5ff;
+            --magenta: #ff2d78;
+            --gold: #ffd447;
+            --text: #c8dde8;
+            --text-dim: #4a6378;
+            --border: rgba(0, 245, 255, 0.18);
+            --glow-cyan: 0 0 20px rgba(0, 245, 255, 0.4);
+            --glow-mag: 0 0 20px rgba(255, 45, 120, 0.4);
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html { scroll-behavior: smooth; }
 
-    <title>Portfolio</title>
+        body {
+            font-family: 'Syne', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            cursor: none;
+            overflow-x: hidden;
+        }
+
+        /* ===== CUSTOM CURSOR ===== */
+        #cursor {
+            width: 12px; height: 12px;
+            background: var(--cyan);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s;
+            box-shadow: var(--glow-cyan);
+        }
+        #cursor-ring {
+            width: 36px; height: 36px;
+            border: 1px solid var(--cyan);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.18s ease;
+            opacity: 0.5;
+        }
+        a:hover ~ #cursor, button:hover ~ #cursor { transform: scale(2); }
+
+        /* ===== SCANLINES OVERLAY ===== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.08) 2px,
+                rgba(0, 0, 0, 0.08) 4px
+            );
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* ===== NOISE GRAIN ===== */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.4;
+            animation: grainShift 0.5s steps(2) infinite;
+        }
+
+        @keyframes grainShift {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-3px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-1px, 3px); }
+            100% { transform: translate(3px, -1px); }
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== NAVBAR ===== */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 50px;
+            height: 70px;
+            background: rgba(5, 10, 15, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        nav .left a {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--cyan);
+            letter-spacing: 3px;
+            text-shadow: var(--glow-cyan);
+        }
+
+        nav .right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        nav .right a {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            color: var(--text-dim);
+            padding: 6px 14px;
+            border: 1px solid transparent;
+            letter-spacing: 1.5px;
+            transition: all 0.25s;
+            text-transform: uppercase;
+        }
+
+        nav .right a:hover {
+            color: var(--cyan);
+            border-color: var(--border);
+            text-shadow: var(--glow-cyan);
+        }
+
+        nav .right a.contact-btn {
+            border-color: var(--magenta);
+            color: var(--magenta);
+        }
+        nav .right a.contact-btn:hover {
+            background: var(--magenta);
+            color: var(--bg);
+            box-shadow: var(--glow-mag);
+        }
+
+        /* ===== HERO SECTION ===== */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 40px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated grid background */
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPulse 6s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Radial glow */
+        #hero::after {
+            content: '';
+            position: absolute;
+            top: 40%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px; height: 500px;
+            background: radial-gradient(ellipse, rgba(0,245,255,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+        }
+
+        /* ===== ASCII ART ===== */
+        .ascii-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .ascii-art {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: clamp(5px, 1.4vw, 11px);
+            line-height: 1.15;
+            color: var(--cyan);
+            text-shadow: 0 0 8px rgba(0,245,255,0.6);
+            white-space: pre;
+            display: inline-block;
+            animation: fadeInGlow 1.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInGlow {
+            from { opacity: 0; filter: blur(8px); }
+            to { opacity: 1; filter: blur(0); }
+        }
+
+        .ascii-scanline {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            animation: scanDown 2.5s linear forwards;
+            opacity: 0.7;
+        }
+
+        @keyframes scanDown {
+            from { top: 0%; opacity: 0.7; }
+            to { top: 100%; opacity: 0; }
+        }
+
+        /* ===== GLITCH TEXT ===== */
+        .glitch-wrap {
+            margin: 10px 0 20px;
+        }
+
+        .glitch {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(14px, 3vw, 22px);
+            font-weight: 400;
+            letter-spacing: 8px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            position: relative;
+            animation: fadeUp 1s 1.8s ease both;
+        }
+
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; right: 0;
+        }
+        .glitch::before {
+            color: var(--magenta);
+            animation: glitch1 3s 2s infinite;
+            clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+        }
+        .glitch::after {
+            color: var(--cyan);
+            animation: glitch2 3s 2.1s infinite;
+            clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+        }
+
+        @keyframes glitch1 {
+            0%, 90%, 100% { transform: none; opacity: 0; }
+            92% { transform: translateX(-4px); opacity: 0.7; }
+            94% { transform: translateX(4px); opacity: 0.7; }
+            96% { transform: none; opacity: 0; }
+        }
+        @keyframes glitch2 {
+            0%, 90%, 100% { transform: none; opacity: 0; }
+            93% { transform: translateX(4px); opacity: 0.7; }
+            95% { transform: translateX(-4px); opacity: 0.7; }
+            97% { transform: none; opacity: 0; }
+        }
+
+        /* ===== TYPEWRITER ===== */
+        .typewriter-line {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 15px;
+            color: var(--gold);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            min-height: 24px;
+            animation: fadeUp 1s 2.2s ease both;
+        }
+
+        .typewriter-line::before { content: '> '; color: var(--magenta); }
+
+        .typed-text { border-right: 2px solid var(--gold); animation: blink 0.8s infinite; }
+
+        @keyframes blink { 0%, 100% { border-color: var(--gold); } 50% { border-color: transparent; } }
+
+        /* ===== BIO CARD ===== */
+        .bio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 40px 0;
+            text-align: left;
+            animation: fadeUp 1s 2.6s ease both;
+        }
+
+        .bio-card {
+            background: rgba(13, 27, 42, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 24px 28px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .bio-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: var(--cyan);
+            transition: background 0.3s;
+        }
+
+        .bio-card:nth-child(2)::before { background: var(--magenta); }
+
+        .bio-card:hover {
+            border-color: rgba(0,245,255,0.4);
+            transform: translateY(-3px);
+        }
+
+        .bio-card .card-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--cyan);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .bio-card:nth-child(2) .card-label { color: var(--magenta); }
+
+        .bio-card p {
+            font-size: 14px;
+            line-height: 1.75;
+            color: var(--text);
+        }
+
+        /* ===== NAV LINKS ===== */
+        .hero-links {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeUp 1s 3s ease both;
+        }
+
+        .hero-links a {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 12px 28px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            color: var(--text-dim);
+        }
+
+        .hero-links a::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: var(--cyan);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .hero-links a:hover {
+            color: var(--bg);
+            border-color: var(--cyan);
+        }
+
+        .hero-links a:hover::before { left: 0; }
+
+        .hero-links a.primary {
+            border-color: var(--magenta);
+            color: var(--magenta);
+        }
+        .hero-links a.primary::before { background: var(--magenta); }
+        .hero-links a.primary:hover { color: var(--bg); border-color: var(--magenta); }
+
+        /* ===== SCROLL INDICATOR ===== */
+        .scroll-hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            animation: fadeUp 1s 3.5s ease both;
+        }
+
+        .scroll-hint span {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .scroll-line {
+            width: 1px; height: 50px;
+            background: linear-gradient(to bottom, var(--cyan), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { height: 50px; opacity: 1; }
+            50% { height: 80px; opacity: 0.4; }
+        }
+
+        /* ===== SKILLS SECTION ===== */
+        #skills {
+            padding: 120px 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 12px;
+        }
+
+        .section-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--magenta);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, var(--border), transparent);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(28px, 5vw, 48px);
+            font-weight: 900;
+            color: var(--text);
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+        }
+
+        .section-title span { color: var(--cyan); }
+
+        .section-desc {
+            font-size: 15px;
+            line-height: 1.75;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin-bottom: 60px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* ===== SKILL CELLS ===== */
+        .cells {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .cell {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 28px 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: default;
+        }
+
+        .cell::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0%; height: 2px;
+            background: var(--cyan);
+            transition: width 0.4s ease;
+        }
+
+        .cell:hover {
+            border-color: rgba(0,245,255,0.4);
+            background: rgba(0,245,255,0.04);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 245, 255, 0.08);
+        }
+
+        .cell:hover::after { width: 100%; }
+
+        .cell i { font-size: 48px; transition: filter 0.3s; }
+        .cell:hover i { filter: drop-shadow(0 0 8px currentColor); }
+
+        .cell span {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .cell:hover span { color: var(--cyan); }
+
+        /* ===== PROJECTS (placeholder) ===== */
+        #projects {
+            padding: 80px 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .coming-soon-box {
+            border: 1px dashed var(--border);
+            padding: 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coming-soon-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,245,255,0.03), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            from { left: -60%; }
+            to { left: 150%; }
+        }
+
+        .coming-soon-box .cs-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 5px;
+            color: var(--magenta);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .coming-soon-box h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 22px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+        }
+
+        .coming-soon-box p {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            color: var(--text-dim);
+            opacity: 0.6;
+        }
+
+        /* ===== CONTACT SECTION ===== */
+        #contact {
+            padding: 120px 60px;
+            max-width: 1100px;
+            margin: 0 auto 60px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2px;
+            margin-top: 50px;
+            border: 1px solid var(--border);
+        }
+
+        .contact-item {
+            padding: 36px 30px;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: background 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-item:last-child { border-right: none; }
+
+        .contact-item::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .contact-item:nth-child(1)::before { background: var(--cyan); }
+        .contact-item:nth-child(2)::before { background: var(--magenta); }
+        .contact-item:nth-child(3)::before { background: var(--gold); }
+
+        .contact-item:hover { background: rgba(0,245,255,0.03); }
+        .contact-item:hover::before { transform: scaleX(1); }
+
+        .contact-item .ci-icon {
+            font-size: 24px;
+            color: var(--text-dim);
+        }
+
+        .contact-item:nth-child(1):hover .ci-icon { color: var(--cyan); }
+        .contact-item:nth-child(2):hover .ci-icon { color: var(--magenta); }
+        .contact-item:nth-child(3):hover .ci-icon { color: var(--gold); }
+
+        .contact-item .ci-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .contact-item .ci-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 15px;
+            color: var(--text);
+            transition: color 0.3s;
+        }
+
+        .contact-item a { display: contents; }
+        .contact-item:hover .ci-value { color: var(--cyan); }
+
+        /* ===== FOOTER ===== */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        footer span {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+
+        footer span .accent { color: var(--cyan); }
+
+        /* ===== FADE-IN ANIMATIONS ===== */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== STATUS DOT ===== */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            animation: fadeUp 1s 1.4s ease both;
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff88;
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { box-shadow: 0 0 4px #00ff88; }
+            50% { box-shadow: 0 0 14px #00ff88, 0 0 30px rgba(0,255,136,0.3); }
+        }
+
+        /* ===== MOBILE ===== */
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            nav .right a span { display: none; }
+            nav .right a { font-size: 18px; padding: 6px 8px; }
+
+            #hero { padding: 90px 20px 60px; }
+
+            .bio-grid { grid-template-columns: 1fr; }
+
+            #skills, #projects, #contact { padding: 80px 24px; }
+
+            .contact-grid { grid-template-columns: 1fr; }
+            .contact-item { border-right: none; border-bottom: 1px solid var(--border); }
+            .contact-item:last-child { border-bottom: none; }
+
+            footer { flex-direction: column; gap: 8px; text-align: center; padding: 20px; }
+
+            .hero-links { gap: 10px; }
+            .hero-links a { padding: 10px 18px; font-size: 11px; }
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Custom cursor -->
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- NAV -->
     <nav>
         <div class="left">
-            <a href="/">Zerin Toma</a>
+            <a href="/">ZT_</a>
         </div>
         <div class="right">
-            <a href="http://github.com/zerintoma" target="_blank" rel="noopener noreferrer">
-                <i class="fab fa-github"></i>
-                <span>GitHub</span>
-            </a>
-            
-            <a href="http://linkedin.com/in/zerin-toma" target="_blank" rel="noopener noreferrer">
-                <i class="fab fa-linkedin"></i>
-                <span>LinkedIn</span>
-            </a>
-
-            <a href="mailto:zerint2006@gmail.com">
-                <i class="fa-solid fa-envelope"></i>
-                <span>Email</span>
-            </a>
-
+            <a href="#skills">Skills</a>
+            <a href="#projects">Projects</a>
+            <a href="http://github.com/zerintoma" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="http://linkedin.com/in/zerin-toma" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="mailto:zerint2006@gmail.com" class="contact-btn">Contact</a>
         </div>
     </nav>
+
     <main>
-        <!--Section 1-->
-        <section class="intro-section">
-            <div class="text">
-            <h2>Hi, I'm Zerin 👋</h2>
-            <p>I'm a Computer Science sophomore at Baruch College with a passion for building solutions through code. I'm currently exploring the intersection of software development and cybersecurity, working on Python projects that I'll be sharing here as I continue to learn and grow. From backend programming to creative tech tools like Touch Designer, I'm expanding my skills across multiple domains to become a well rounded developer. This portfolio is a living showcase of my journey check back regularly for updates as I add new projects and experiments. Let's build something great together!</p>
-            <h3>Beyond the digital world</h3>
-            <p>When I'm not programming, you'll find me at my sewing machine designing and creating my own clothes, or volunteering at Fab Scrap, a NYC-based nonprofit that diverts textile waste from landfills by redistributing fabric to the community. Sustainability matters to me, and I love contributing to the circular fashion economy while helping others access creative materials. I'm also passionate about nature photography, capturing the hidden beautiful spaces across New York. Whether it's coding, fashion, or photography, I'm drawn to creating things that blend functionality with artistry.</p>
-            <div class="links">
-                <a href="#skills">
-                    <i class="fa-solid fa-code"></i>
-                    <span>Skills</span>    
-                </a>
-                <a href="#projects">
-                    <i class="fa-solid fa-file"></i>
-                    <span>Projects</span>    
-                </a>
-                <a href="#contact">
-                    <i class="fa-solid fa-envelope"></i>
-                    <span>Contact</span>    
-                </a>
+
+        <!-- ====== HERO ====== -->
+        <section id="hero">
+            <div class="hero-inner">
+
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span>Available for opportunities</span>
+                </div>
+
+                <!-- ASCII Art of "ZERIN" -->
+                <div class="ascii-container">
+                    <div class="ascii-scanline"></div>
+                    <pre class="ascii-art">
+███████╗███████╗██████╗ ██╗███╗   ██╗    ████████╗ ██████╗ ███╗   ███╗ █████╗ 
+╚══███╔╝██╔════╝██╔══██╗██║████╗  ██║    ╚══██╔══╝██╔═══██╗████╗ ████║██╔══██╗
+  ███╔╝ █████╗  ██████╔╝██║██╔██╗ ██║       ██║   ██║   ██║██╔████╔██║███████║
+ ███╔╝  ██╔══╝  ██╔══██╗██║██║╚██╗██║       ██║   ██║   ██║██║╚██╔╝██║██╔══██║
+███████╗███████╗██║  ██║██║██║ ╚████║       ██║   ╚██████╔╝██║ ╚═╝ ██║██║  ██║
+╚══════╝╚══════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝       ╚═╝    ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝</pre>
+                </div>
+
+                <div class="glitch-wrap">
+                    <div class="glitch" data-text="Computer Science · Baruch College · Sophomore">Computer Science · Baruch College · Sophomore</div>
+                </div>
+
+                <div class="typewriter-line">
+                    <span class="typed-text" id="typed"></span>
+                </div>
+
+                <div class="bio-grid">
+                    <div class="bio-card">
+                        <div class="card-label">// About Me</div>
+                        <p>CS sophomore at Baruch College building at the intersection of software development and cybersecurity. Working on Python projects and exploring full-stack development and creative tech like Touch Designer.</p>
+                    </div>
+                    <div class="bio-card">
+                        <div class="card-label">// Beyond Code</div>
+                        <p>Fashion designer & sewist. Volunteer at Fab Scrap NYC — diverting textile waste into community creativity. Nature photographer capturing hidden beautiful spaces across New York City.</p>
+                    </div>
+                </div>
+
+                <div class="hero-links">
+                    <a href="#skills"><span>Skills</span></a>
+                    <a href="#projects"><span>Projects</span></a>
+                    <a href="#contact" class="primary"><span>Get in Touch</span></a>
+                </div>
+
             </div>
+
+            <div class="scroll-hint">
+                <span>Scroll</span>
+                <div class="scroll-line"></div>
             </div>
         </section>
 
-        <!--section 2-->
+        <!-- ====== SKILLS ====== -->
         <section id="skills">
-            <h2>Skills</h2>
-            <div class="text">
-                Programming languages I've worked with throughout my computer science journey. I'm continuously expanding this toolkit as I take on new projects and explore emerging technologies.
+            <div class="reveal">
+                <div class="section-header">
+                    <span class="section-tag">01 / Skills</span>
+                    <div class="section-line"></div>
+                </div>
+                <h2 class="section-title">Tech <span>Stack</span></h2>
+                <p class="section-desc">// Languages and tools in my arsenal. Expanding continuously.</p>
             </div>
-            <div class="cells">
+
+            <div class="cells reveal">
                 <div class="cell">
                     <i class="devicon-html5-plain colored"></i>
                     <span>HTML</span>
@@ -86,19 +849,119 @@
                     <i class="devicon-python-plain colored"></i>
                     <span>Python</span>
                 </div>
-                <div class ="cell">
+                <div class="cell">
                     <i class="devicon-cplusplus-plain colored"></i>
                     <span>C++</span>
                 </div>
             </div>
         </section>
 
-        <!--section 3-->
-        <section id="projects"></section>
+        <!-- ====== PROJECTS ====== -->
+        <section id="projects">
+            <div class="reveal">
+                <div class="section-header">
+                    <span class="section-tag">02 / Projects</span>
+                    <div class="section-line"></div>
+                </div>
+                <h2 class="section-title">Work &amp; <span>Builds</span></h2>
+            </div>
+            <div class="coming-soon-box reveal">
+                <div class="cs-label">// Incoming</div>
+                <h3>Projects Loading...</h3>
+                <p>Check back soon — builds in progress.</p>
+            </div>
+        </section>
 
-        <!--section 4-->
-        <section id="contact"></section>
+        <!-- ====== CONTACT ====== -->
+        <section id="contact">
+            <div class="reveal">
+                <div class="section-header">
+                    <span class="section-tag">03 / Contact</span>
+                    <div class="section-line"></div>
+                </div>
+                <h2 class="section-title">Let's <span>Connect</span></h2>
+                <p class="section-desc">// Open to collaborations, internships, and interesting conversations.</p>
+            </div>
+
+            <div class="contact-grid reveal">
+                <div class="contact-item">
+                    <a href="mailto:zerint2006@gmail.com">
+                        <span class="ci-label">Email</span>
+                        <span class="ci-value">zerint06@gmail.com</span>
+                    </a>
+                </div>
+                <div class="contact-item">
+                    <a href="http://linkedin.com/in/zerin-toma" target="_blank">
+                        <span class="ci-label">LinkedIn</span>
+                        <span class="ci-value">/in/zerin-toma</span>
+                    </a>
+                </div>
+                <div class="contact-item">
+                    <a href="http://github.com/zerintoma" target="_blank">
+                        <span class="ci-label">GitHub</span>
+                        <span class="ci-value">/zerintoma</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
     </main>
-    
+
+    <!-- FOOTER -->
+    <footer>
+        <span>© 2025 <span class="accent">Zerin Toma</span></span>
+        <span>Built with <span class="accent">HTML · CSS · JS</span></span>
+    </footer>
+
+    <script>
+        // ===== CURSOR =====
+        const cursor = document.getElementById('cursor');
+        const ring = document.getElementById('cursor-ring');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+        function animCursor() {
+            cursor.style.left = mx - 6 + 'px';
+            cursor.style.top = my - 6 + 'px';
+            rx += (mx - rx) * 0.12;
+            ry += (my - ry) * 0.12;
+            ring.style.left = rx - 18 + 'px';
+            ring.style.top = ry - 18 + 'px';
+            requestAnimationFrame(animCursor);
+        }
+        animCursor();
+
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2.5)'; ring.style.transform = 'scale(1.5)'; ring.style.opacity = '0.8'; });
+            el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; ring.style.opacity = '0.5'; });
+        });
+
+        // ===== TYPEWRITER =====
+        const phrases = [
+            'Building at the intersection of code & creativity.',
+            'Exploring cybersecurity & software development.',
+            'Photographer. Fashion designer. Engineer.',
+            'Currently: learning, building, creating.'
+        ];
+        let pi = 0, ci = 0, deleting = false;
+        const el = document.getElementById('typed');
+        function type() {
+            const phrase = phrases[pi];
+            if (!deleting) {
+                el.textContent = phrase.slice(0, ++ci);
+                if (ci === phrase.length) { deleting = true; setTimeout(type, 1800); return; }
+            } else {
+                el.textContent = phrase.slice(0, --ci);
+                if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+            }
+            setTimeout(type, deleting ? 30 : 55);
+        }
+        setTimeout(type, 2800);
+
+        // ===== SCROLL REVEAL =====
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
 </body>
 </html>
