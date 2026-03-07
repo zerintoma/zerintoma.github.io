@@ -724,11 +724,57 @@
 
         /* ===== MOBILE ===== */
         @media (max-width: 768px) {
-            nav { padding: 0 20px; }
-            nav .right a span { display: none; }
-            nav .right a { font-size: 18px; padding: 6px 8px; }
+            /* Nav: tighten layout, show icon-like short labels */
+            nav {
+                padding: 0 16px;
+                height: 60px;
+            }
 
-            #hero { padding: 90px 20px 60px; }
+            nav .left a {
+                font-size: 15px;
+                letter-spacing: 2px;
+            }
+
+            nav .right {
+                gap: 2px;
+            }
+
+            /* Hide text labels on mobile, show only SVG-style short codes */
+            nav .right a {
+                font-size: 10px;
+                padding: 5px 7px;
+                letter-spacing: 0.5px;
+            }
+
+            /* Hide the text inside nav links, show custom data-label instead */
+            nav .right a .nav-label { display: none; }
+
+            /* Skills & Projects links — hide on mobile to save space */
+            nav .right a.nav-skills,
+            nav .right a.nav-projects {
+                display: none;
+            }
+
+            /* GitHub → GH, LinkedIn → LI */
+            nav .right a.nav-github::after { content: 'GH'; }
+            nav .right a.nav-linkedin::after { content: 'LI'; }
+            nav .right a.nav-github,
+            nav .right a.nav-linkedin {
+                font-size: 10px;
+                padding: 5px 8px;
+                border: 1px solid var(--border);
+                color: var(--text-dim);
+                letter-spacing: 1px;
+            }
+
+            /* Contact button stays visible but compact */
+            nav .right a.contact-btn {
+                font-size: 10px;
+                padding: 5px 10px;
+                letter-spacing: 0.5px;
+            }
+
+            #hero { padding: 80px 20px 60px; }
 
             .bio-grid { grid-template-columns: 1fr; }
 
@@ -742,6 +788,22 @@
 
             .hero-links { gap: 10px; }
             .hero-links a { padding: 10px 18px; font-size: 11px; }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 380px) {
+            nav .left a {
+                font-size: 13px;
+                letter-spacing: 1px;
+            }
+            nav .right a.nav-github,
+            nav .right a.nav-linkedin {
+                padding: 4px 6px;
+            }
+            nav .right a.contact-btn {
+                padding: 4px 8px;
+                font-size: 9px;
+            }
         }
     </style>
 </head>
@@ -757,10 +819,10 @@
             <a href="/">ZT_</a>
         </div>
         <div class="right">
-            <a href="#skills">Skills</a>
-            <a href="#projects">Projects</a>
-            <a href="http://github.com/zerintoma" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <a href="http://linkedin.com/in/zerin-toma" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="#skills" class="nav-skills"><span class="nav-label">Skills</span></a>
+            <a href="#projects" class="nav-projects"><span class="nav-label">Projects</span></a>
+            <a href="http://github.com/zerintoma" target="_blank" rel="noopener noreferrer" class="nav-github"><span class="nav-label">GitHub</span></a>
+            <a href="http://linkedin.com/in/zerin-toma" target="_blank" rel="noopener noreferrer" class="nav-linkedin"><span class="nav-label">LinkedIn</span></a>
             <a href="mailto:zerint06@gmail.com" class="contact-btn">Contact</a>
         </div>
     </nav>
@@ -965,4 +1027,3 @@
     </script>
 </body>
 </html>
-
