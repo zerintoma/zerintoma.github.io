@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Line</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0eb;
+    --surface: #fdfaf7;
+    --surface2: #f0ebe4;
+    --border: #ddd5c8;
+    --text: #3a3128;
+    --text-muted: #8a7d70;
+    --accent: #c4956a;
+    --accent-light: #e8d5bf;
+    --accent-pale: #f5ece2;
+    --line: #c9b99e;
+    --shadow: rgba(58,49,40,0.08);
+    --shadow-lg: rgba(58,49,40,0.16);
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 68px; left: 0; right: 0; bottom: 80px;
+    background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 500;
+    height: 68px;
+    background: rgba(245,240,235,0.93);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand h1 { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 28px; letter-spacing: 0.4px; line-height: 1; }
+  .brand .sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+  .brand .sub span { color: var(--accent); margin-right: 3px; }
+
+  #loginBtn {
+    background: var(--text); color: var(--surface);
+    border: none; padding: 9px 22px; border-radius: 40px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+  }
+  #loginBtn:hover { background: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 12px var(--shadow-lg); }
+
+  .user-pill { display: flex; align-items: center; gap: 8px; background: var(--accent-pale); border: 1px solid var(--accent-light); padding: 7px 16px; border-radius: 40px; font-size: 13px; }
+  .user-pill .av { width: 24px; height: 24px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: 700; }
+  .user-pill .lo { font-size: 11px; color: var(--text-muted); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; margin-left: 4px; }
+
+  /* ── INFINITE SCROLL WRAPPER ── */
+  #scrollWrap {
+    position: fixed;
+    top: 68px; left: 0; right: 0; bottom: 80px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    z-index: 1;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  #scrollWrap::-webkit-scrollbar { height: 6px; }
+  #scrollWrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── CANVAS ── */
+  #canvas { min-width: 100vw; height: 100%; position: relative; }
+
+  /* SVG layer for duration arrows */
+  #dsvg { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2; overflow: visible; }
+
+  /* events area */
+  #evArea { position: absolute; inset: 0; z-index: 3; }
+
+  /* ── FIXED BOTTOM RAIL (visual backdrop) ── */
+  #rail {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 80px;
+    background: rgba(245,240,235,0.94);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    z-index: 400;
+    pointer-events: none;
+  }
+
+  /* Rail inner — scrolls with canvas to match positions */
+  #railInner {
+    position: absolute; bottom: 0; left: 0;
+    height: 80px;
+    display: flex; align-items: center;
+    padding: 0 140px;
+    pointer-events: none;
+  }
+  .arrow-track {
+    flex: 1; height: 2px;
+    background: linear-gradient(90deg, var(--accent-light), var(--accent));
+    border-radius: 2px; position: relative;
+  }
+  .arrow-track::after {
+    content: '';
+    position: absolute; right: -1px; top: 50%;
+    transform: translateY(-50%);
+    border-left: 10px solid var(--accent);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+  }
+
+  /* rail tick + label */
+  .r-tick { position: absolute; bottom: 44px; width: 1px; height: 8px; background: var(--line); transform: translateX(-50%); pointer-events: none; }
+  .r-lbl  { position: absolute; bottom: 54px; font-size: 10px; color: var(--text-muted); transform: translateX(-50%); white-space: nowrap; pointer-events: none; font-family: 'DM Sans',sans-serif; }
+
+  /* ── FIXED ADD BUTTON ── */
+  #addBtn {
+    position: fixed; bottom: 19px; right: 32px; z-index: 600;
+    width: 44px; height: 44px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 50%; font-size: 24px; font-weight: 300;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(196,149,106,0.45); transition: all 0.22s;
+  }
+  #addBtn:hover { transform: scale(1.1) rotate(90deg); background: var(--text); box-shadow: 0 6px 20px var(--shadow-lg); }
+
+  /* ── EVENT COLUMNS ── */
+  .ev-col {
+    position: absolute;
+    display: flex; flex-direction: column-reverse; align-items: center; gap: 10px;
+    transform: translateX(-50%);
+    padding-bottom: 4px;
+  }
+  .ev-col::before {
+    content: ''; position: absolute; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 1px; height: 14px; background: var(--border);
+  }
+
+  /* ── EVENT CARD ── */
+  .ev-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    width: 158px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 2px 8px var(--shadow);
+    position: relative; overflow: hidden; flex-shrink: 0;
+  }
+  .ev-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--card-color, var(--accent));
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .ev-card:hover { width: 224px; box-shadow: 0 8px 30px var(--shadow-lg); transform: translateY(-5px); z-index: 20; }
+  .c-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--card-color, var(--accent)); margin-bottom: 7px; box-shadow: 0 0 0 3px rgba(196,149,106,0.18); }
+  .c-title { font-family: 'Cormorant Garamond',serif; font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.25; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ev-card:hover .c-title { white-space: normal; overflow: visible; }
+  .c-date  { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; line-height: 1.3; }
+  .c-img   { width: 100%; height: 0; overflow: hidden; border-radius: 7px; transition: height 0.3s; }
+  .ev-card:hover .c-img { height: 74px; margin-bottom: 7px; }
+  .c-img img { width: 100%; height: 100%; object-fit: cover; }
+  .c-desc  { font-size: 12px; color: var(--text-muted); line-height: 1.45; max-height: 0; overflow: hidden; transition: max-height 0.3s; }
+  .ev-card:hover .c-desc { max-height: 140px; }
+
+  /* ── EMPTY STATE ── */
+  #emptyState { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; color: var(--text-muted); pointer-events: none; z-index: 0; }
+  #emptyState .ei { font-size: 48px; opacity: 0.35; margin-bottom: 12px; }
+  #emptyState p   { font-family: 'Cormorant Garamond',serif; font-size: 22px; font-weight: 300; opacity: 0.55; }
+  #emptyState small { font-size: 13px; display: block; margin-top: 5px; opacity: 0.4; }
+
+  /* ── MODALS ── */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(58,49,40,0.38); backdrop-filter: blur(4px); z-index: 700; align-items: center; justify-content: center; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: var(--radius-lg); padding: 36px; width: 460px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px var(--shadow-lg); position: relative; animation: mIn 0.28s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes mIn { from{opacity:0;transform:scale(0.92) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .modal-x { position: absolute; top: 18px; right: 20px; background: var(--surface2); border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 15px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .modal-x:hover { background: var(--border); color: var(--text); }
+  .modal h2 { font-family: 'Cormorant Garamond',serif; font-size: 26px; font-weight: 500; margin-bottom: 22px; }
+
+  .field { margin-bottom: 17px; }
+  .field label { display: block; font-size: 11.5px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .field label .req { color: var(--accent); margin-left: 2px; }
+  .field input[type=text],
+  .field input[type=email],
+  .field input[type=password],
+  .field input[type=date],
+  .field textarea {
+    width: 100%; padding: 11px 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'DM Sans',sans-serif; font-size: 14px; color: var(--text);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(196,149,106,0.13); }
+  .field textarea { resize: vertical; min-height: 78px; }
+
+  .date-row { display: flex; gap: 8px; align-items: flex-end; }
+  .date-row .field { flex: 1; margin-bottom: 0; }
+  .end-toggle { background: none; border: 1px dashed var(--border); border-radius: 8px; padding: 8px 11px; font-size: 12px; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.18s; height: 42px; }
+  .end-toggle:hover, .end-toggle.on { border-color: var(--accent); color: var(--accent); background: var(--accent-pale); }
+
+  .img-drop { border: 2px dashed var(--border); border-radius: var(--radius); padding: 22px; text-align: center; cursor: pointer; transition: all 0.18s; position: relative; overflow: hidden; }
+  .img-drop:hover, .img-drop.drag { border-color: var(--accent); background: var(--accent-pale); }
+  .img-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .img-drop .di { font-size: 26px; margin-bottom: 5px; }
+  .img-drop .dt { font-size: 13px; color: var(--text-muted); }
+  .img-prev { display: none; margin-top: 9px; border-radius: 8px; overflow: hidden; position: relative; }
+  .img-prev img { width: 100%; height: 110px; object-fit: cover; }
+  .img-prev .rm { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  .color-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .swatch { width: 27px; height: 27px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.14s; flex-shrink: 0; }
+  .swatch.sel { border-color: var(--text); transform: scale(1.18); }
+  .custom-c { width: 27px; height: 27px; border-radius: 50%; border: 2px dashed var(--border); cursor: pointer; overflow: hidden; position: relative; flex-shrink: 0; }
+  .custom-c input { position: absolute; inset: -4px; opacity: 0; cursor: pointer; width: 130%; height: 130%; }
+
+  .pw-bar-wrap { height: 4px; border-radius: 2px; margin-top: 5px; background: var(--border); overflow: hidden; }
+  .pw-bar { height: 100%; border-radius: 2px; width: 0; transition: width 0.3s, background 0.3s; }
+  .pw-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+
+  .btn-p { width: 100%; background: var(--text); color: var(--surface); border: none; padding: 13px; border-radius: var(--radius); font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; margin-top: 5px; }
+  .btn-p:hover { background: var(--accent); box-shadow: 0 6px 20px rgba(196,149,106,0.3); transform: translateY(-1px); }
+
+  .switch-lnk { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 13px; }
+  .switch-lnk a { color: var(--accent); cursor: pointer; font-weight: 500; }
+
+  .err-msg { background: #fdecea; border: 1px solid #f5c2c0; color: #8b3a38; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 11px; display: none; }
+  .ok-msg  { background: #eaf5ea; border: 1px solid #b8ddb8; color: #3a6e3a;  padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 11px; display: none; }
+
+  /* Guest notice banner inside event modal */
+  .guest-notice { background: var(--accent-pale); border: 1px solid var(--accent-light); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+  .guest-notice a { color: var(--accent); cursor: pointer; font-weight: 500; text-decoration: underline; text-underline-offset: 2px; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="brand">
+    <h1>Memory Line</h1>
+    <div class="sub"><span>✦</span>This page is just for testing, to save your work, please log in!</div>
+  </div>
+  <div id="hdrAction">
+    <button id="loginBtn" onclick="openAuth('login')">Log In</button>
+  </div>
+</header>
+
+<!-- EMPTY STATE -->
+<div id="emptyState" style="display:none;">
+  <div class="ei">✦</div>
+  <p>Your timeline is empty</p>
+  <small>Click the + button to add your first event</small>
+</div>
+
+<!-- SCROLL WRAPPER + CANVAS -->
+<div id="scrollWrap">
+  <div id="canvas">
+    <svg id="dsvg"></svg>
+    <div id="evArea"></div>
+    <div id="railInner">
+      <div class="arrow-track"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FIXED RAIL BACKDROP -->
+<div id="rail"></div>
+
+<!-- FIXED ADD BUTTON -->
+<button id="addBtn" onclick="openEvent()" title="Add event">+</button>
+
+<!-- ── EVENT MODAL ── -->
+<div class="overlay" id="evOverlay">
+  <div class="modal">
+    <button class="modal-x" onclick="closeEvent()">✕</button>
+    <h2>New Event</h2>
+
+    <!-- Guest notice: shown only when not logged in -->
+    <div class="guest-notice" id="guestNotice" style="display:none;">
+      ✦ You're in demo mode — events won't be saved when you leave.
+      <a onclick="closeEvent();openAuth('login')">Log in</a> or <a onclick="closeEvent();openAuth('signup')">create an account</a> to save your timeline.
+    </div>
+
+    <div class="field">
+      <label>Title <span class="req">*</span></label>
+      <input type="text" id="evTitle" placeholder="e.g. French Revolution begins">
+    </div>
+
+    <div class="field">
+      <label>Start Date <span class="req">*</span></label>
+      <div class="date-row">
+        <div class="field" style="margin:0;flex:1;"><input type="date" id="evStart"></div>
+        <button class="end-toggle" id="endToggle" onclick="toggleEnd()">+ End Date</button>
+      </div>
+    </div>
+
+    <div class="field" id="endField" style="display:none;">
+      <label>End Date</label>
+      <input type="date" id="evEnd">
+    </div>
+
+    <div class="field">
+      <label>Description <span class="req">*</span></label>
+      <textarea id="evDesc" placeholder="Describe this event…"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Image <span style="font-weight:400;text-transform:none;font-size:11px;">(optional)</span></label>
+      <div class="img-drop" id="imgDrop">
+        <input type="file" id="evImg" accept="image/*" onchange="onImgPick(this)">
+        <div class="di">🖼️</div>
+        <div class="dt">Drop an image or click to upload</div>
+      </div>
+      <div class="img-prev" id="imgPrev">
+        <img id="imgPrevSrc" src="" alt="">
+        <button class="rm" onclick="clearImg()">✕</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Bullet Color <span style="font-weight:400;text-transform:none;font-size:11px;">(optional)</span></label>
+      <div class="color-row" id="colorRow">
+        <div class="swatch sel" style="background:#c4956a" data-c="#c4956a" onclick="pickSwatch(this)"></div>
+        <div class="swatch"     style="background:#8aad8a" data-c="#8aad8a" onclick="pickSwatch(this)"></div>
+        <div class="swatch"     style="background:#c48a8a" data-c="#c48a8a" onclick="pickSwatch(this)"></div>
+        <div class="swatch"     style="background:#8a9aad" data-c="#8a9aad" onclick="pickSwatch(this)"></div>
+        <div class="swatch"     style="background:#a48aad" data-c="#a48aad" onclick="pickSwatch(this)"></div>
+        <div class="swatch"     style="background:#ad9e8a" data-c="#ad9e8a" onclick="pickSwatch(this)"></div>
+        <div class="custom-c" title="Custom color">
+          <input type="color" id="custColor" value="#c4956a" onchange="pickCustom(this)">
+          <span style="font-size:13px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;">🎨</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="err-msg" id="evErr"></div>
+    <button class="btn-p" onclick="submitEvent()">Done — Add to Timeline</button>
+  </div>
+</div>
+
+<!-- ── AUTH MODAL ── -->
+<div class="overlay" id="authOverlay">
+  <div class="modal" style="width:400px;">
+    <button class="modal-x" onclick="closeAuth()">✕</button>
+    <div id="authBody"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let currentUser = null;
+let events      = [];   // logged-in user's events
+let guestEvents = [];   // demo events (guests only, not persisted)
+let selColor    = '#c4956a';
+let imgData     = null;
+let endOn       = false;
+
+const SEED = {
+  id: 'seed-001',
+  title: 'Creation of Memory Line',
+  startDate: '2026-04-08',
+  endDate: null,
+  desc: "I created this timeline website for a friend of mine who wished for a website to easily map out historical events for history classes, because it's often difficult to visualize.",
+  color: '#c4956a',
+  image: null
+};
+
+// ═══════════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════════
+const getUsers   = ()    => { try { return JSON.parse(localStorage.getItem('ml_users')||'{}'); } catch { return {}; } };
+const saveUsers  = u     => localStorage.setItem('ml_users', JSON.stringify(u));
+const getUserEv  = email => { try { return JSON.parse(localStorage.getItem('ml_ev_'+btoa(email))||'[]'); } catch { return []; } };
+const saveUserEv = (e,v) => localStorage.setItem('ml_ev_'+btoa(e), JSON.stringify(v));
+const loadSess   = ()    => { try { return JSON.parse(localStorage.getItem('ml_sess')||'null'); } catch { return null; } };
+const saveSess   = u     => localStorage.setItem('ml_sess', JSON.stringify(u));
+const clearSess  = ()    => localStorage.removeItem('ml_sess');
+
+// ═══════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════
+function openAuth(mode) { document.getElementById('authOverlay').classList.add('open'); renderAuth(mode); }
+function closeAuth()    { document.getElementById('authOverlay').classList.remove('open'); }
+
+function renderAuth(mode) {
+  const b = document.getElementById('authBody');
+  if (mode === 'login') {
+    b.innerHTML = `
+      <h2>Welcome back</h2>
+      <div class="err-msg" id="ae"></div><div class="ok-msg" id="ao"></div>
+      <div class="field"><label>Email</label><input type="email" id="aEm" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="aPw" placeholder="Your password"></div>
+      <button class="btn-p" onclick="doLogin()">Log In</button>
+      <div class="switch-lnk">No account? <a onclick="renderAuth('signup')">Create one</a></div>`;
+  } else {
+    b.innerHTML = `
+      <h2>Create Account</h2>
+      <div class="err-msg" id="ae"></div><div class="ok-msg" id="ao"></div>
+      <div class="field"><label>Email</label><input type="email" id="aEm" placeholder="you@example.com"></div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="aPw" placeholder="Choose a secure password" oninput="pwStr(this.value)">
+        <div class="pw-bar-wrap"><div class="pw-bar" id="pwBar"></div></div>
+        <div class="pw-hint" id="pwHint">Use at least 1 capital letter, 1 special symbol (e.g. ! @ # $), and 1 lowercase letter.</div>
+      </div>
+      <div class="field"><label>Confirm Password</label><input type="password" id="aPw2" placeholder="Repeat password"></div>
+      <button class="btn-p" onclick="doSignup()">Create Account</button>
+      <div class="switch-lnk">Have an account? <a onclick="renderAuth('login')">Log in</a></div>`;
+  }
+}
+
+function authMsg(type, msg) {
+  const e = document.getElementById('ae'), o = document.getElementById('ao');
+  if (type==='err') { e.textContent=msg; e.style.display='block'; o.style.display='none'; }
+  else              { o.textContent=msg; o.style.display='block'; e.style.display='none'; }
+}
+
+function pwStr(pw) {
+  let s=0;
+  if(pw.length>=8)s++; if(/[A-Z]/.test(pw))s++; if(/[a-z]/.test(pw))s++;
+  if(/[0-9]/.test(pw))s++; if(/[^A-Za-z0-9]/.test(pw))s++;
+  const cols=['#e57373','#ff9800','#ffc107','#8bc34a','#4caf50'];
+  const labs=['Very weak','Weak','Fair','Good','Strong'];
+  const bar=document.getElementById('pwBar'), hint=document.getElementById('pwHint');
+  if(bar){bar.style.width=s*20+'%';bar.style.background=cols[s-1]||'var(--border)';}
+  if(hint)hint.textContent=s<3?'Use at least 1 capital letter, 1 special symbol, and 1 lowercase letter.':'Strength: '+(labs[s-1]||'');
+}
+
+function hashPw(pw) {
+  let h=0; for(let i=0;i<pw.length;i++) h=(Math.imul(31,h)+pw.charCodeAt(i))|0;
+  return h.toString(36)+pw.length.toString(36)+btoa(pw.split('').reverse().join('')).slice(0,8);
+}
+
+function doLogin() {
+  const em=document.getElementById('aEm').value.trim().toLowerCase();
+  const pw=document.getElementById('aPw').value;
+  if(!em||!pw){authMsg('err','Please fill in all fields.');return;}
+  const users=getUsers();
+  if(!users[em]){authMsg('err','No account for this email.');return;}
+  if(users[em].pw!==hashPw(pw)){authMsg('err','Incorrect password.');return;}
+  currentUser={email:em}; saveSess(currentUser);
+  events=getUserEv(em);
+  if(events.length===0){events=[{...SEED}];saveUserEv(em,events);}
+  guestEvents=[];
+  closeAuth(); updateHeader(); renderTimeline();
+}
+
+function doSignup() {
+  const em=document.getElementById('aEm').value.trim().toLowerCase();
+  const pw=document.getElementById('aPw').value;
+  const pw2=document.getElementById('aPw2').value;
+  if(!em||!pw||!pw2){authMsg('err','Please fill in all fields.');return;}
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(em)){authMsg('err','Enter a valid email.');return;}
+  if(pw.length<6||!/[A-Z]/.test(pw)||!/[a-z]/.test(pw)||!/[^A-Za-z0-9]/.test(pw)){
+    authMsg('err','Password needs at least 1 uppercase, 1 lowercase, and 1 special symbol.');return;
+  }
+  if(pw!==pw2){authMsg('err','Passwords do not match.');return;}
+  const users=getUsers();
+  if(users[em]){authMsg('err','An account with this email already exists.');return;}
+  users[em]={pw:hashPw(pw),created:Date.now()};
+  saveUsers(users);
+  currentUser={email:em}; saveSess(currentUser);
+  events=[{...SEED}]; saveUserEv(em,events);
+  guestEvents=[];
+  authMsg('ok','Account created! Welcome to Memory Line ✦');
+  setTimeout(()=>{closeAuth();updateHeader();renderTimeline();},1200);
+}
+
+function doLogout() {
+  currentUser=null; events=[]; guestEvents=[{...SEED}]; clearSess(); updateHeader(); renderTimeline();
+}
+
+function updateHeader() {
+  const el=document.getElementById('hdrAction');
+  if(currentUser){
+    el.innerHTML=`<div class="user-pill">
+      <div class="av">${currentUser.email[0].toUpperCase()}</div>
+      <span>${currentUser.email}</span>
+      <span class="lo" onclick="doLogout()">Log out</span>
+    </div>`;
+  } else {
+    el.innerHTML=`<button id="loginBtn" onclick="openAuth('login')">Log In</button>`;
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  EVENT MODAL
+// ═══════════════════════════════════════════════
+function openEvent() {
+  ['evTitle','evStart','evEnd','evDesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('evErr').style.display='none';
+  endOn=false;
+  document.getElementById('endField').style.display='none';
+  const et=document.getElementById('endToggle');
+  et.classList.remove('on'); et.textContent='+ End Date';
+  imgData=null;
+  document.getElementById('imgPrev').style.display='none';
+  selColor='#c4956a';
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
+  document.querySelector('.swatch[data-c="#c4956a"]').classList.add('sel');
+  // Show guest notice if not logged in
+  document.getElementById('guestNotice').style.display = currentUser ? 'none' : 'block';
+  document.getElementById('evOverlay').classList.add('open');
+}
+function closeEvent(){document.getElementById('evOverlay').classList.remove('open');}
+
+function toggleEnd(){
+  endOn=!endOn;
+  document.getElementById('endField').style.display=endOn?'block':'none';
+  const btn=document.getElementById('endToggle');
+  btn.classList.toggle('on',endOn);
+  btn.textContent=endOn?'✓ End Date':'+ End Date';
+}
+
+function onImgPick(input){
+  const f=input.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{imgData=e.target.result;document.getElementById('imgPrevSrc').src=imgData;document.getElementById('imgPrev').style.display='block';};
+  r.readAsDataURL(f);
+}
+function clearImg(){
+  imgData=null; document.getElementById('evImg').value='';
+  document.getElementById('imgPrev').style.display='none';
+}
+function pickSwatch(el){
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
+  el.classList.add('sel'); selColor=el.dataset.c;
+}
+function pickCustom(input){
+  selColor=input.value;
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel'));
+}
+
+function submitEvent(){
+  const title=document.getElementById('evTitle').value.trim();
+  const start=document.getElementById('evStart').value;
+  const desc=document.getElementById('evDesc').value.trim();
+  const errEl=document.getElementById('evErr');
+  if(!title){errEl.textContent='Please enter a title.';errEl.style.display='block';return;}
+  if(!start){errEl.textContent='Please enter a start date.';errEl.style.display='block';return;}
+  if(!desc){errEl.textContent='Please enter a description.';errEl.style.display='block';return;}
+  let end=null;
+  if(endOn){
+    end=document.getElementById('evEnd').value;
+    if(end&&end<start){errEl.textContent='End date cannot be before start date.';errEl.style.display='block';return;}
+    if(!end)end=null;
+  }
+  const ev={
+    id: Date.now()+Math.random(),
+    title, startDate:start, endDate:end,
+    desc, color:selColor, image:imgData||null, created:Date.now()
+  };
+
+  if(currentUser){
+    // Logged-in: persist to localStorage
+    events.push(ev);
+    saveUserEv(currentUser.email, events);
+  } else {
+    // Guest: add to in-memory guestEvents array (session only)
+    guestEvents.push(ev);
+  }
+
+  closeEvent();
+  renderTimeline();
+}
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+const parseD  = s => s?new Date(s+'T12:00:00'):null;
+const fmtDate = s => { if(!s)return''; return parseD(s).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); };
+const fmtShort= s => { if(!s)return''; return parseD(s).toLocaleDateString('en-US',{year:'numeric',month:'short'}); };
+const esc     = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const NS      = 'http://www.w3.org/2000/svg';
+const svgEl   = (tag,attrs)=>{ const e=document.createElementNS(NS,tag); Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v)); return e; };
+
+// ═══════════════════════════════════════════════
+//  TIMELINE RENDER
+// ═══════════════════════════════════════════════
+function renderTimeline(){
+  const canvas   = document.getElementById('canvas');
+  const area     = document.getElementById('evArea');
+  const svg      = document.getElementById('dsvg');
+  const railInner= document.getElementById('railInner');
+  const emptyEl  = document.getElementById('emptyState');
+
+  area.innerHTML=''; svg.innerHTML='';
+  railInner.querySelectorAll('.r-tick,.r-lbl').forEach(e=>e.remove());
+
+  // ── Determine which events to display ──────────
+  // Logged-in: show their saved events
+  // Guest: show seed + anything they've added this session
+  let display;
+  if(currentUser){
+    display = events;
+  } else {
+    // Guest pool: always has the seed; merge with any guest-added events
+    display = [...guestEvents];
+  }
+
+  if(display.length===0){
+    canvas.style.width='100%'; emptyEl.style.display='block'; return;
+  }
+  emptyEl.style.display='none';
+
+  // Sort + group by startDate (chronological, exact date comparison)
+  const sorted=[...display].sort((a,b)=>{
+    if(a.startDate < b.startDate) return -1;
+    if(a.startDate > b.startDate) return  1;
+    return (a.created||0)-(b.created||0);
+  });
+  const groups={};
+  sorted.forEach(ev=>{(groups[ev.startDate]||(groups[ev.startDate]=[])).push(ev);});
+  const startDates=Object.keys(groups).sort();
+
+  // All unique dates (for X-scale)
+  let allDates=[...startDates];
+  display.forEach(ev=>{if(ev.endDate&&!allDates.includes(ev.endDate))allDates.push(ev.endDate);});
+  allDates.sort();
+
+  const minDate=parseD(allDates[0]);
+  const maxDate=parseD(allDates[allDates.length-1]);
+  const span=(maxDate-minDate)||1;
+
+  // Canvas + content sizing
+  const SIDE    = 160;
+  const MIN_GAP = 240;
+  const minCont = Math.max(window.innerWidth-SIDE*2,(startDates.length-1)*MIN_GAP);
+  const canvasW = minCont + SIDE*2;
+  const canvasH = document.getElementById('scrollWrap').offsetHeight||(window.innerHeight-68-80);
+
+  canvas.style.width  = canvasW+'px';
+  canvas.style.height = canvasH+'px';
+  railInner.style.width = canvasW+'px';
+
+  // SVG
+  svg.style.width=canvasW+'px'; svg.style.height=canvasH+'px';
+  svg.setAttribute('width',canvasW); svg.setAttribute('height',canvasH);
+  svg.setAttribute('viewBox',`0 0 ${canvasW} ${canvasH}`);
+
+  // Date → X mapping
+  function dX(ds){
+    if(allDates.length===1||span===0)return SIDE+minCont/2;
+    return SIDE+(parseD(ds)-minDate)/span*minCont;
+  }
+
+  // Rail tick marks + labels
+  const step=Math.max(1,Math.floor(startDates.length/8));
+  startDates.forEach((d,i)=>{
+    if(i%step===0||i===startDates.length-1){
+      const x=dX(d);
+      const tick=document.createElement('div'); tick.className='r-tick'; tick.style.left=x+'px'; railInner.appendChild(tick);
+      const lbl=document.createElement('div');  lbl.className='r-lbl';  lbl.style.left=x+'px'; lbl.textContent=fmtShort(d); railInner.appendChild(lbl);
+    }
+  });
+
+  // Constants for layout
+  const RAIL_H   = 80;
+  const RAIL_Y   = canvasH - RAIL_H;
+  const LINE_Y   = RAIL_Y + 40;
+  const COL_BOT  = RAIL_H;
+
+  // Render event columns
+  const colData=[];
+  startDates.forEach(ds=>{
+    const grp=groups[ds];
+    const x=dX(ds);
+    const col=document.createElement('div');
+    col.className='ev-col';
+    col.style.left=x+'px';
+    col.style.bottom=COL_BOT+'px';
+    grp.forEach(ev=>{
+      const card=document.createElement('div');
+      card.className='ev-card';
+      card.style.setProperty('--card-color',ev.color);
+      if(ev.endDate)card.dataset.eid=ev.id;
+      const imgH=ev.image?`<div class="c-img"><img src="${ev.image}" alt=""></div>`:'';
+      let dl=fmtDate(ev.startDate); if(ev.endDate)dl+=' → '+fmtDate(ev.endDate);
+      card.innerHTML=`<div class="c-dot"></div><div class="c-title">${esc(ev.title)}</div><div class="c-date">${dl}</div>${imgH}<div class="c-desc">${esc(ev.desc)}</div>`;
+      col.appendChild(card);
+    });
+    area.appendChild(col);
+    colData.push({ds,x,grp,col});
+  });
+
+  // ── Draw duration arrows ──────────────────────
+  requestAnimationFrame(()=>{
+    const LANE_BASE = LINE_Y - 22;
+    const LANE_STEP = 20;
+    const CORNER_R  = 10;
+    const DOT_R     = 4.5;
+
+    // Gather all events with valid end dates
+    const durEvs=[];
+    colData.forEach(({x,grp})=>{
+      grp.forEach(ev=>{
+        if(!ev.endDate)return;
+        const ex=dX(ev.endDate);
+        if(ex<=x+4)return;
+        durEvs.push({ev,sx:x,ex});
+      });
+    });
+    durEvs.sort((a,b)=>a.sx-b.sx);
+
+    // Greedy lane assignment (lowest non-clashing lane)
+    const laneIntervals=[];
+    durEvs.forEach(d=>{
+      let lane=0;
+      while(true){
+        if(!laneIntervals[lane]){laneIntervals[lane]=[];break;}
+        const clash=laneIntervals[lane].some(([a,b])=>d.sx<b+8&&d.ex>a-8);
+        if(!clash)break;
+        lane++;
+      }
+      laneIntervals[lane].push([d.sx,d.ex]);
+      d.lane=lane;
+    });
+
+    durEvs.forEach(({ev,sx,ex,lane})=>{
+      const col=ev.color;
+      const runY=LANE_BASE - lane*LANE_STEP;
+
+      // Path: origin dot → horizontal run → rounded 90° bend → vertical drop to timeline
+      const path=`M ${sx} ${runY} L ${ex-CORNER_R} ${runY} Q ${ex} ${runY} ${ex} ${runY+CORNER_R} L ${ex} ${LINE_Y-8}`;
+      const arrow=`M ${ex-5} ${LINE_Y-10} L ${ex} ${LINE_Y-1} L ${ex+5} ${LINE_Y-10}`;
+
+      svg.appendChild(svgEl('circle',{cx:sx,cy:runY,r:DOT_R,fill:col,opacity:'0.9'}));
+      svg.appendChild(svgEl('path',{d:path,fill:'none',stroke:col,'stroke-width':'2','stroke-opacity':'0.72','stroke-linecap':'round','stroke-linejoin':'round'}));
+      svg.appendChild(svgEl('path',{d:arrow,fill:'none',stroke:col,'stroke-width':'2.5','stroke-linecap':'round','stroke-linejoin':'round','stroke-opacity':'0.92'}));
+
+      const lbl=document.createElementNS(NS,'text');
+      lbl.setAttribute('x',ex); lbl.setAttribute('y',LINE_Y-12);
+      lbl.setAttribute('text-anchor','middle'); lbl.setAttribute('font-size','10');
+      lbl.setAttribute('font-family','DM Sans,sans-serif');
+      lbl.setAttribute('fill',col); lbl.setAttribute('opacity','0.78');
+      lbl.textContent=fmtShort(ev.endDate);
+      svg.appendChild(lbl);
+    });
+  });
+}
+
+// Drag-drop image
+const dropEl=document.getElementById('imgDrop');
+dropEl.addEventListener('dragover',e=>{e.preventDefault();dropEl.classList.add('drag');});
+dropEl.addEventListener('dragleave',()=>dropEl.classList.remove('drag'));
+dropEl.addEventListener('drop',e=>{
+  e.preventDefault();dropEl.classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.type.startsWith('image/')){
+    const r=new FileReader();
+    r.onload=ev=>{imgData=ev.target.result;document.getElementById('imgPrevSrc').src=imgData;document.getElementById('imgPrev').style.display='block';};
+    r.readAsDataURL(f);
+  }
+});
+
+// Close modals on backdrop click
+document.getElementById('evOverlay').addEventListener('click',function(e){if(e.target===this)closeEvent();});
+document.getElementById('authOverlay').addEventListener('click',function(e){if(e.target===this)closeAuth();});
+
+// Re-render on resize
+window.addEventListener('resize',renderTimeline);
+
+// ─── INIT ────────────────────────────────────────
+(function init(){
+  const s=loadSess();
+  if(s&&s.email){
+    currentUser=s;
+    events=getUserEv(s.email);
+    if(events.length===0){events=[{...SEED}];saveUserEv(s.email,events);}
+  } else {
+    // Guest starts with the seed event visible
+    guestEvents=[{...SEED}];
+  }
+  updateHeader();
+  renderTimeline();
+})();
+</script>
+</body>
+</html>
