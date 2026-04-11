@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A practical guide to web accessibility covering WCAG guidelines, contrast checking, and color palette generation." />
+  <title>Web Accessibility Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* =====================
+       RESET & ROOT
+    ===================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #f7f4f0;
+      --surface:    #ffffff;
+      --surface2:   #f0ede8;
+      --border:     #e4dfd8;
+      --border2:    #d4cfc8;
+      --text:       #1c1917;
+      --text-mid:   #57534e;
+      --text-soft:  #a8a29e;
+      --sage:       #4a7c59;
+      --sage-light: #eaf2ec;
+      --sage-mid:   #c8dece;
+      --terracotta: #b45844;
+      --terra-light:#fdf0ec;
+      --blue:       #3b6fa0;
+      --blue-light: #edf3fa;
+      --amber:      #92600a;
+      --amber-light:#fdf6e3;
+      --radius-sm:  6px;
+      --radius:     12px;
+      --radius-lg:  18px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    a { color: var(--blue); }
+    a:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 2px; }
+
+    /* =====================
+       SKIP LINK
+    ===================== */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 16px;
+      background: var(--text);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 9999;
+      text-decoration: none;
+      transition: top 0.2s;
+    }
+    .skip-link:focus { top: 0; }
+
+    /* =====================
+       NAV
+    ===================== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(247, 244, 240, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+    }
+
+    .nav-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+
+    .nav-logo {
+      font-family: 'Lora', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 4px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      color: var(--text-mid);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: background 0.15s, color 0.15s;
+      font-weight: 400;
+    }
+
+    .nav-links a:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    /* =====================
+       HERO
+    ===================== */
+    #hero {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 80px 32px 64px;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--sage);
+      background: var(--sage-light);
+      border: 1px solid var(--sage-mid);
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+
+    #hero h1 {
+      font-family: 'Lora', serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+      max-width: 720px;
+    }
+
+    #hero p {
+      font-size: 17px;
+      color: var(--text-mid);
+      max-width: 580px;
+      line-height: 1.75;
+      margin-bottom: 40px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .hero-stat .num {
+      font-family: 'Lora', serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .hero-stat .label {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .hero-divider {
+      width: 1px;
+      background: var(--border2);
+      align-self: stretch;
+    }
+
+    /* =====================
+       SECTION WRAPPER
+    ===================== */
+    .section-wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 64px 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(22px, 3.5vw, 32px);
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      margin-bottom: 16px;
+      line-height: 1.25;
+    }
+
+    .section-intro {
+      font-size: 15px;
+      color: var(--text-mid);
+      max-width: 620px;
+      line-height: 1.75;
+      margin-bottom: 40px;
+    }
+
+    /* =====================
+       GUIDE CARDS (accordion)
+    ===================== */
+    .guide-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .guide-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .guide-card:hover { border-color: var(--border2); }
+
+    .guide-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 22px;
+      cursor: pointer;
+      user-select: none;
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .guide-card-header:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: -2px;
+      border-radius: var(--radius);
+    }
+
+    .guide-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .guide-chevron {
+      margin-left: auto;
+      color: var(--text-soft);
+      font-size: 13px;
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+
+    .guide-card.open .guide-chevron { transform: rotate(180deg); }
+
+    .guide-body {
+      display: none;
+      padding: 0 22px 22px 72px;
+    }
+
+    .guide-card.open .guide-body { display: block; }
+
+    .guide-body p {
+      font-size: 14px;
+      color: var(--text-mid);
+      line-height: 1.8;
+      margin-bottom: 14px;
+    }
+
+    .guide-body p:last-child { margin-bottom: 0; }
+
+    .rule-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .rule-list li {
+      font-size: 13.5px;
+      color: var(--text-mid);
+      padding-left: 18px;
+      position: relative;
+      line-height: 1.65;
+    }
+
+    .rule-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 9px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border2);
+    }
+
+    .rule-list li strong { color: var(--text); font-weight: 500; }
+
+    .tip-box {
+      background: var(--sage-light);
+      border: 1px solid var(--sage-mid);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-top: 14px;
+    }
+
+    .tip-box .tip-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 6px;
+    }
+
+    .tip-box p {
+      font-size: 13px;
+      color: #2d5c3e;
+      margin-bottom: 0;
+      line-height: 1.65;
+    }
+
+    .warn-box {
+      background: var(--terra-light);
+      border: 1px solid #f0c4b8;
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-top: 14px;
+    }
+
+    .warn-box .warn-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--terracotta);
+      margin-bottom: 6px;
+    }
+
+    .warn-box p {
+      font-size: 13px;
+      color: #7a3626;
+      margin-bottom: 0;
+      line-height: 1.65;
+    }
+
+    code {
+      font-family: 'DM Mono', monospace;
+      font-size: 12.5px;
+      background: var(--surface2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--terracotta);
+    }
+
+    pre {
+      background: var(--text);
+      color: #e8e4df;
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12.5px;
+      overflow-x: auto;
+      margin: 12px 0;
+      line-height: 1.7;
+    }
+
+    pre .c { color: var(--text-soft); }
+    pre .k { color: #7dd3b0; }
+    pre .s { color: #f4a58a; }
+    pre .a { color: #93c5fd; }
+
+    /* =====================
+       TOOLS SECTION
+    ===================== */
+    #tools .tools-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 680px) { #tools .tools-grid { grid-template-columns: 1fr; } }
+
+    .tool-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .tool-title {
+      font-family: 'Lora', serif;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .tool-desc {
+      font-size: 13px;
+      color: var(--text-mid);
+      margin-bottom: 22px;
+      line-height: 1.65;
+    }
+
+    /* --- CONTRAST TOOL --- */
+    .color-inputs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .color-input-wrap {
+      flex: 1;
+      min-width: 110px;
+    }
+
+    .color-input-wrap label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 6px;
+    }
+
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="color"] {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      padding: 2px;
+      background: var(--surface);
+    }
+
+    .hex-input {
+      flex: 1;
+      padding: 8px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .hex-input:focus { border-color: var(--blue); }
+
+    .contrast-preview {
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .contrast-preview .preview-text {
+      font-family: 'Lora', serif;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .contrast-preview .preview-small {
+      font-size: 13px;
+      opacity: 0.85;
+    }
+
+    .ratio-display {
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .ratio-num {
+      font-family: 'Lora', serif;
+      font-size: 36px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .ratio-label {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-top: 2px;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 100px;
+      letter-spacing: 0.5px;
+    }
+
+    .badge.pass { background: var(--sage-light); color: var(--sage); border: 1px solid var(--sage-mid); }
+    .badge.fail { background: var(--terra-light); color: var(--terracotta); border: 1px solid #f0c4b8; }
+
+    /* --- PALETTE TOOL --- */
+    .palette-input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      align-items: flex-end;
+    }
+
+    .palette-input-wrap {
+      flex: 1;
+    }
+
+    .palette-input-wrap label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 6px;
+    }
+
+    .palette-color-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .gen-btn {
+      padding: 10px 18px;
+      background: var(--text);
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, transform 0.1s;
+      height: 38px;
+      align-self: flex-end;
+    }
+
+    .gen-btn:hover { background: #333; }
+    .gen-btn:active { transform: scale(0.97); }
+
+    .palette-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .palette-swatch {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .swatch-color {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+    }
+
+    .swatch-info {
+      flex: 1;
+    }
+
+    .swatch-hex {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .swatch-name {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-top: 1px;
+    }
+
+    .swatch-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-right: 12px;
+    }
+
+    .swatch-copy {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+      color: var(--text-mid);
+      margin-right: 10px;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .swatch-copy:hover { background: var(--surface2); }
+    .swatch-copy:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+    /* =====================
+       FADE-IN ANIMATION
+    ===================== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* stagger */
+    .fade-in:nth-child(2) { transition-delay: 0.08s; }
+    .fade-in:nth-child(3) { transition-delay: 0.16s; }
+    .fade-in:nth-child(4) { transition-delay: 0.24s; }
+    .fade-in:nth-child(5) { transition-delay: 0.32s; }
+
+    /* =====================
+       FOOTER
+    ===================== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    footer a { color: var(--text-mid); }
+
+    /* =====================
+       RESPONSIVE
+    ===================== */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      #hero { padding: 48px 20px 40px; }
+      .section-wrap { padding: 48px 20px; }
+      .hero-stats { gap: 20px; }
+      .tool-card { padding: 20px; }
+      .guide-body { padding-left: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- NAV -->
+  <nav aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Web Accessibility</a>
+      <ul class="nav-links" role="list">
+        <li><a href="#guide">Guidelines</a></li>
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#resources">Resources</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- HERO -->
+    <section id="hero" aria-labelledby="hero-heading">
+      <div class="hero-tag" aria-hidden="true">WCAG 2.1 Reference</div>
+      <h1 id="hero-heading">The web works best when it works for everyone.</h1>
+      <p>
+        Web accessibility is about making sure people with disabilities can use the web just as well as everyone else.
+        That covers visual impairments, hearing loss, motor difficulties, and cognitive differences.
+        This guide breaks down the main guidelines, explains what actually goes wrong on most sites, and gives you practical ways to fix it.
+      </p>
+      <div class="hero-stats" role="list" aria-label="Key accessibility statistics">
+        <div class="hero-stat" role="listitem">
+          <span class="num">1 in 4</span>
+          <span class="label">U.S. adults have a disability</span>
+        </div>
+        <div class="hero-divider" aria-hidden="true"></div>
+        <div class="hero-stat" role="listitem">
+          <span class="num">96.3%</span>
+          <span class="label">of top websites have WCAG failures</span>
+        </div>
+        <div class="hero-divider" aria-hidden="true"></div>
+        <div class="hero-stat" role="listitem">
+          <span class="num">4</span>
+          <span class="label">core principles (POUR)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- GUIDE -->
+    <section id="guide" class="section-wrap" aria-labelledby="guide-heading">
+      <div class="section-label" aria-hidden="true">01 — Guidelines</div>
+      <h2 class="section-title" id="guide-heading">What the guidelines actually cover</h2>
+      <p class="section-intro">
+        WCAG 2.1 is organized around four principles. Everything falls under one of them:
+        content must be Perceivable, Operable, Understandable, and Robust (POUR).
+        Here's what that means for real websites.
+      </p>
+
+      <div class="guide-grid" role="list">
+
+        <!-- TEXT & TYPOGRAPHY -->
+        <div class="guide-card fade-in" role="listitem">
+          <button
+            class="guide-card-header"
+            aria-expanded="false"
+            aria-controls="gc-text"
+            onclick="toggleCard(this)"
+          >
+            <div class="guide-icon" style="background:#eaf2ec;" aria-hidden="true">Aa</div>
+            <span>Text &amp; Typography</span>
+            <span class="guide-chevron" aria-hidden="true">▼</span>
+          </button>
+          <div class="guide-body" id="gc-text" role="region" aria-label="Text and Typography details">
+            <p>
+              Text is the backbone of most websites, and it's also one of the most commonly broken things from an accessibility standpoint.
+              The issues usually aren't dramatic — they're small decisions that stack up.
+            </p>
+            <ul class="rule-list" aria-label="Text requirements">
+              <li><strong>Minimum font size:</strong> 16px for body text is a solid baseline. WCAG doesn't name a specific size, but anything under 12px is almost always a problem.</li>
+              <li><strong>Line height:</strong> At least 1.5x the font size for body text. Tight line spacing makes reading significantly harder for people with dyslexia or cognitive disabilities.</li>
+              <li><strong>Line length:</strong> Keep paragraphs between 60 and 80 characters wide. Very long lines force the eye to travel too far, which causes reading errors.</li>
+              <li><strong>Text spacing:</strong> Users need to be able to override letter spacing, word spacing, and line height without content breaking or overlapping.</li>
+              <li><strong>Avoid justified text:</strong> Full justification creates irregular gaps between words that disrupt reading flow for people with dyslexia.</li>
+              <li><strong>Don't use text inside images:</strong> Screen readers can't read it, it doesn't scale, and it breaks at high zoom levels.</li>
+            </ul>
+            <div class="warn-box">
+              <div class="warn-label">Common mistake</div>
+              <p>Setting <code>user-select: none</code> or <code>pointer-events: none</code> on body text. Users who rely on text-to-speech browser extensions need to be able to select and copy text.</p>
+            </div>
+            <div class="tip-box">
+              <div class="tip-label">Quick fix</div>
+              <p>Add this to your CSS: <code>p { max-width: 70ch; line-height: 1.6; }</code>. That single rule handles line length and spacing for most body text.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- HEADINGS -->
+        <div class="guide-card fade-in" role="listitem">
+          <button
+            class="guide-card-header"
+            aria-expanded="false"
+            aria-controls="gc-headings"
+            onclick="toggleCard(this)"
+          >
+            <div class="guide-icon" style="background:#edf3fa;" aria-hidden="true">H1</div>
+            <span>Headings &amp; Page Structure</span>
+            <span class="guide-chevron" aria-hidden="true">▼</span>
+          </button>
+          <div class="guide-body" id="gc-headings" role="region" aria-label="Headings and Page Structure details">
+            <p>
+              Screen reader users often navigate pages entirely by jumping between headings, similar to how sighted users skim.
+              If your heading structure is wrong, these users get a completely broken experience.
+            </p>
+            <ul class="rule-list" aria-label="Heading requirements">
+              <li><strong>One H1 per page:</strong> The H1 is the page title. Using more than one confuses both screen readers and search engines.</li>
+              <li><strong>Don't skip levels:</strong> H1 should be followed by H2, H2 by H3, and so on. Jumping from H2 to H4 breaks the outline structure.</li>
+              <li><strong>Headings are for structure, not style:</strong> Don't pick heading levels based on how big you want text to look. Style with CSS, use headings for hierarchy.</li>
+              <li><strong>Every section needs a heading:</strong> If a user is navigating by heading and there's a long section with no heading, they have no way to identify it.</li>
+            </ul>
+            <pre aria-label="Example of correct heading structure"><span class="c">&lt;!-- Correct --&gt;</span>
+<span class="k">&lt;h1&gt;</span>Accessibility Guide<span class="k">&lt;/h1&gt;</span>
+  <span class="k">&lt;h2&gt;</span>Text Guidelines<span class="k">&lt;/h2&gt;</span>
+    <span class="k">&lt;h3&gt;</span>Font Size<span class="k">&lt;/h3&gt;</span>
+  <span class="k">&lt;h2&gt;</span>Color &amp; Contrast<span class="k">&lt;/h2&gt;</span>
+
+<span class="c">&lt;!-- Wrong --&gt;</span>
+<span class="k">&lt;h1&gt;</span>Accessibility Guide<span class="k">&lt;/h1&gt;</span>
+  <span class="k">&lt;h3&gt;</span>Text Guidelines<span class="k">&lt;/h3&gt;</span> <span class="c">&lt;!-- skipped H2 --&gt;</span></pre>
+            <div class="tip-box">
+              <div class="tip-label">Quick check</div>
+              <p>Open your browser's developer tools and search the page for all heading tags. Read them in order out loud. If they don't form a logical outline of the page, fix the structure.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLOR & CONTRAST -->
+        <div class="guide-card fade-in" role="listitem">
+          <button
+            class="guide-card-header"
+            aria-expanded="false"
+            aria-controls="gc-contrast"
+            onclick="toggleCard(this)"
+          >
+            <div class="guide-icon" style="background:#fdf6e3;" aria-hidden="true">◑</div>
+            <span>Color &amp; Contrast</span>
+            <span class="guide-chevron" aria-hidden="true">▼</span>
+          </button>
+          <div class="guide-body" id="gc-contrast" role="region" aria-label="Color and Contrast details">
+            <p>
+              Contrast is the ratio between the brightness of foreground text and its background.
+              Low contrast is one of the most common WCAG failures, and it affects everyone in difficult lighting conditions, not just people with visual impairments.
+            </p>
+            <ul class="rule-list" aria-label="Contrast requirements">
+              <li><strong>Normal text (under 18pt):</strong> Minimum 4.5:1 contrast ratio against the background.</li>
+              <li><strong>Large text (18pt+ or 14pt+ bold):</strong> Minimum 3:1 contrast ratio.</li>
+              <li><strong>UI components and icons:</strong> Minimum 3:1 against adjacent colors.</li>
+              <li><strong>Never use color alone to convey meaning:</strong> "Required fields are shown in red" fails users who are colorblind. Add an asterisk or label too.</li>
+              <li><strong>Focus indicators need contrast too:</strong> The outline around a focused button must meet the 3:1 requirement against the surrounding area.</li>
+            </ul>
+            <div class="warn-box">
+              <div class="warn-label">Very common failure</div>
+              <p>Placeholder text in form inputs. Placeholder text is almost always styled with low-opacity gray that fails contrast requirements. Use visible labels instead, or style placeholders to meet the 4.5:1 threshold.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMAGES & ALT TEXT -->
+        <div class="guide-card fade-in" role="listitem">
+          <button
+            class="guide-card-header"
+            aria-expanded="false"
+            aria-controls="gc-images"
+            onclick="toggleCard(this)"
+          >
+            <div class="guide-icon" style="background:#fdf0ec;" aria-hidden="true">🖼</div>
+            <span>Images &amp; Alt Text</span>
+            <span class="guide-chevron" aria-hidden="true">▼</span>
+          </button>
+          <div class="guide-body" id="gc-images" role="region" aria-label="Images and Alt Text details">
+            <p>
+              Screen readers announce images by reading their alt text. If alt text is missing, the reader often reads out the filename instead —
+              something like "IMG_20240311_142203.jpg", which is useless. If it's an SVG or icon with no alt, it might just say "image".
+            </p>
+            <ul class="rule-list" aria-label="Alt text requirements">
+              <li><strong>Informative images:</strong> Write alt text that describes what the image conveys in context, not just what it looks like. For a chart, describe the trend, not the colors.</li>
+              <li><strong>Decorative images:</strong> Use an empty alt attribute — <code>alt=""</code> — so screen readers skip it. Don't just leave alt out entirely.</li>
+              <li><strong>Functional images (linked or clickable):</strong> The alt text should describe the destination or action, not the image itself. A logo that links to the homepage should say "Home", not "Company logo".</li>
+              <li><strong>Complex images:</strong> Charts, diagrams, and infographics need a longer text description nearby — either visible on the page or via <code>aria-describedby</code>.</li>
+            </ul>
+            <pre aria-label="Alt text code examples"><span class="c">&lt;!-- Informative image --&gt;</span>
+<span class="k">&lt;img</span> <span class="a">src</span>=<span class="s">"chart.png"</span>
+     <span class="a">alt</span>=<span class="s">"Bar chart showing revenue growth of 40% in Q3"</span><span class="k">&gt;</span>
+
+<span class="c">&lt;!-- Decorative image --&gt;</span>
+<span class="k">&lt;img</span> <span class="a">src</span>=<span class="s">"divider.png"</span> <span class="a">alt</span>=<span class="s">""</span> <span class="a">role</span>=<span class="s">"presentation"</span><span class="k">&gt;</span>
+
+<span class="c">&lt;!-- Linked logo --&gt;</span>
+<span class="k">&lt;a</span> <span class="a">href</span>=<span class="s">"/"</span><span class="k">&gt;&lt;img</span> <span class="a">src</span>=<span class="s">"logo.png"</span> <span class="a">alt</span>=<span class="s">"Home"</span><span class="k">&gt;&lt;/a&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- TABLES -->
+        <div class="guide-card fade-in" role="listitem">
+          <button
+            class="guide-card-header"
+            aria-expanded="false"
+            aria-controls="gc-tables"
+            onclick="toggleCard(this)"
+          >
+            <div class="guide-icon" style="background:#edf3fa;" aria-hidden="true">⊞</div>
+            <span>Tables</span>
+            <span class="guide-chevron" aria-hidden="true">▼</span>
+          </button>
+          <div class="guide-body" id="gc-tables" role="region" aria-label="Tables details">
+            <p>
+              When a screen reader reads a table, it announces each cell along with its row and column headers so the user knows what the data means.
+              Without proper markup, users just hear a stream of numbers or values with no context.
+            </p>
+            <ul class="rule-list" aria-label="Table requirements">
+              <li><strong>Use <code>&lt;th&gt;</code> for headers:</strong> Don't style a regular <code>&lt;td&gt;</code> to look like a header. The <code>&lt;th&gt;</code> element gives it semantic meaning that assistive tech can use.</li>
+              <li><strong>Add <code>scope</code> attributes:</strong> <code>scope="col"</code> on column headers and <code>scope="row"</code> on row headers tells screen readers how headers relate to cells.</li>
+              <li><strong>Add a <code>&lt;caption&gt;</code>:</strong> This is the table's title and the first thing a screen reader announces. Without it, users don't know what the table is about before diving in.</li>
+              <li><strong>Never use tables for layout:</strong> CSS grid and flexbox exist for layout. Using tables for layout confuses screen readers that expect table structure to mean data relationships.</li>
+            </ul>
+            <pre aria-label="Accessible table code example"><span class="k">&lt;table&gt;</span>
+  <span class="k">&lt;caption&gt;</span>Q3 Sales by Region<span class="k">&lt;/caption&gt;</span>
+  <span class="k">&lt;thead&gt;</span>
+    <span class="k">&lt;tr&gt;</span>
+      <span class="k">&lt;th</span> <span class="a">scope</span>=<span class="s">"col"</span><span class="k">&gt;</span>Region<span class="k">&lt;/th&gt;</span>
+      <span class="k">&lt;th</span> <span class="a">scope</span>=<span class="s">"col"</span><span class="k">&gt;</span>Revenue<span class="k">&lt;/th&gt;</span>
+    <span class="k">&lt;/tr&gt;</span>
+  <span class="k">&lt;/thead&gt;</span>
+  <span class="k">&lt;tbody&gt;</span>
+    <span class="k">&lt;tr&gt;</span>
+      <span class="k">&lt;th</span> <span class="a">scope</span>=<span class="s">"row"</span><span class="k">&gt;</span>Northeast<span class="k">&lt;/th&gt;</span>
+      <span class="k">&lt;td&gt;</span>$420,000<span class="k">&lt;/td&gt;</span>
+    <span class="k">&lt;/tr&gt;</span>
+  <span class="k">&lt;/tbody&gt;</span>
+<span class="k">&lt;/table&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- SCREEN READERS -->
+        <div class="guide-card fade-in" role="listitem">
+          <button
+            class="guide-card-header"
+            aria-expanded="false"
+            aria-controls="gc-sr"
+            onclick="toggleCard(this)"
+          >
+            <div class="guide-icon" style="background:#eaf2ec;" aria-hidden="true">♪</div>
+            <span>How Screen Readers Work</span>
+            <span class="guide-chevron" aria-hidden="true">▼</span>
+          </button>
+          <div class="guide-body" id="gc-sr" role="region" aria-label="Screen Reader details">
+            <p>
+              A screen reader converts on-screen content into speech or braille output. It reads the accessibility tree — a version of the DOM that contains only semantic information.
+              Visual styling is mostly invisible to it.
+            </p>
+            <ul class="rule-list" aria-label="Screen reader considerations">
+              <li><strong>Announce dynamic changes:</strong> If content updates without a page reload (like a form error appearing), use <code>aria-live="polite"</code> so screen readers announce the change.</li>
+              <li><strong>Hidden content:</strong> <code>display: none</code> and <code>visibility: hidden</code> hide content from screen readers too. To hide visually but keep accessible, use the "visually hidden" CSS class instead.</li>
+              <li><strong>Icon-only buttons:</strong> A button with only an icon inside it will be announced as "button" with no description. Always add <code>aria-label="Close menu"</code> or similar.</li>
+              <li><strong>Reading order:</strong> Screen readers follow the DOM order, not the visual order. If you reorder elements visually with CSS, the reading order can become completely nonsensical.</li>
+              <li><strong>ARIA roles:</strong> Use ARIA roles to add semantic meaning when HTML elements alone aren't enough — but always prefer native HTML elements first. A <code>&lt;button&gt;</code> is better than a <code>&lt;div role="button"&gt;</code>.</li>
+            </ul>
+            <pre aria-label="Visually hidden CSS class and aria-live example"><span class="c">/* Keep content accessible but visually hidden */</span>
+<span class="k">.visually-hidden</span> {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+<span class="c">&lt;!-- Announce dynamic changes --&gt;</span>
+<span class="k">&lt;div</span> <span class="a">aria-live</span>=<span class="s">"polite"</span> <span class="a">aria-atomic</span>=<span class="s">"true"</span><span class="k">&gt;</span>
+  Form submitted successfully.
+<span class="k">&lt;/div&gt;</span></pre>
+          </div>
+        </div>
+
+        <!-- KEYBOARD NAVIGATION -->
+        <div class="guide-card fade-in" role="listitem">
+          <button
+            class="guide-card-header"
+            aria-expanded="false"
+            aria-controls="gc-keyboard"
+            onclick="toggleCard(this)"
+          >
+            <div class="guide-icon" style="background:#fdf6e3;" aria-hidden="true">⌨</div>
+            <span>Keyboard Navigation</span>
+            <span class="guide-chevron" aria-hidden="true">▼</span>
+          </button>
+          <div class="guide-body" id="gc-keyboard" role="region" aria-label="Keyboard Navigation details">
+            <p>
+              Many people can't use a mouse — whether because of motor impairments, tremors, or simply preference.
+              Every interactive element on a page needs to be reachable and operable with a keyboard alone.
+            </p>
+            <ul class="rule-list" aria-label="Keyboard navigation requirements">
+              <li><strong>Tab order must make sense:</strong> Pressing Tab should move through interactive elements in a logical order — usually left to right, top to bottom.</li>
+              <li><strong>Never remove focus outlines entirely:</strong> <code>outline: none</code> without a custom replacement is one of the most harmful things you can do. Keyboard users need to see where they are.</li>
+              <li><strong>Custom components need keyboard support:</strong> A dropdown menu, modal, or custom slider built in JavaScript needs keyboard event handlers. The Enter and Space keys should activate buttons. Arrow keys should move through options in a listbox.</li>
+              <li><strong>Modals must trap focus:</strong> When a modal opens, focus should stay inside it. The user should not be able to Tab to elements behind the overlay.</li>
+              <li><strong>Skip links:</strong> A "Skip to main content" link at the very top of the page lets keyboard users bypass navigation menus on every load. It can be visually hidden until focused.</li>
+            </ul>
+            <div class="tip-box">
+              <div class="tip-label">Test it yourself</div>
+              <p>Close your mouse right now and try to use your own website with only the Tab, Enter, Space, and arrow keys. Most developers find at least two or three broken interactions the first time they try this.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORMS -->
+        <div class="guide-card fade-in" role="listitem">
+          <button
+            class="guide-card-header"
+            aria-expanded="false"
+            aria-controls="gc-forms"
+            onclick="toggleCard(this)"
+          >
+            <div class="guide-icon" style="background:#fdf0ec;" aria-hidden="true">✎</div>
+            <span>Forms</span>
+            <span class="guide-chevron" aria-hidden="true">▼</span>
+          </button>
+          <div class="guide-body" id="gc-forms" role="region" aria-label="Forms details">
+            <p>
+              Forms are where a lot of accessibility failures happen because there are so many small things to get right.
+              A user relying on a screen reader filling out an inaccessible form is one of the most frustrating experiences on the web.
+            </p>
+            <ul class="rule-list" aria-label="Form requirements">
+              <li><strong>Every input needs a label:</strong> Placeholder text is not a label. When a user starts typing, the placeholder disappears and there's no way to check what the field was asking for.</li>
+              <li><strong>Associate labels programmatically:</strong> Use <code>&lt;label for="inputId"&gt;</code> or wrap the input inside the label element. <code>aria-label</code> is a backup, not the first choice.</li>
+              <li><strong>Error messages must be specific:</strong> "Invalid input" tells the user nothing. "Email address must include an @ symbol" tells them exactly what to fix.</li>
+              <li><strong>Required fields:</strong> Mark them with <code>required</code> or <code>aria-required="true"</code>. If you use an asterisk (*), explain it at the top of the form.</li>
+              <li><strong>Group related inputs:</strong> Use <code>&lt;fieldset&gt;</code> and <code>&lt;legend&gt;</code> to group related radio buttons or checkboxes. Screen readers announce the legend before each option.</li>
+            </ul>
+            <div class="warn-box">
+              <div class="warn-label">Common failure</div>
+              <p>Auto-focusing on a field when the page loads can disorient screen reader users who haven't had a chance to understand the page context yet. Avoid it unless the primary purpose of the page is that specific form.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TOOLS -->
+    <section id="tools" class="section-wrap" aria-labelledby="tools-heading">
+      <div class="section-label" aria-hidden="true">02 — Tools</div>
+      <h2 class="section-title" id="tools-heading">Check your own work</h2>
+      <p class="section-intro">
+        Use these to test color choices before you build. Both run entirely in the browser — nothing is sent anywhere.
+      </p>
+
+      <div class="tools-grid">
+
+        <!-- CONTRAST CHECKER -->
+        <div class="tool-card fade-in" aria-labelledby="contrast-tool-title">
+          <h3 class="tool-title" id="contrast-tool-title">Contrast Ratio Checker</h3>
+          <p class="tool-desc">
+            Enter a text color and background color to see if they meet WCAG AA or AAA requirements.
+            The ratio updates live as you change values.
+          </p>
+
+          <div class="color-inputs">
+            <div class="color-input-wrap">
+              <label for="fg-color">Text color</label>
+              <div class="color-row">
+                <input type="color" id="fg-color-picker" value="#1c1917" aria-label="Text color picker" oninput="syncColor('fg')" />
+                <input type="text" id="fg-color" class="hex-input" value="#1c1917" maxlength="7" aria-label="Text color hex value" oninput="syncPicker('fg')" />
+              </div>
+            </div>
+            <div class="color-input-wrap">
+              <label for="bg-color">Background color</label>
+              <div class="color-row">
+                <input type="color" id="bg-color-picker" value="#f7f4f0" aria-label="Background color picker" oninput="syncColor('bg')" />
+                <input type="text" id="bg-color" class="hex-input" value="#f7f4f0" maxlength="7" aria-label="Background color hex value" oninput="syncPicker('bg')" />
+              </div>
+            </div>
+          </div>
+
+          <div class="contrast-preview" id="contrast-preview" aria-live="polite" aria-label="Color preview">
+            <div class="preview-text">The quick brown fox</div>
+            <div class="preview-small">Sample text at 16px and smaller</div>
+          </div>
+
+          <div class="ratio-display" aria-live="polite">
+            <div class="ratio-num" id="ratio-num">—</div>
+            <div class="ratio-label">contrast ratio</div>
+          </div>
+
+          <div class="badge-row" id="badge-row" aria-live="polite" aria-label="WCAG compliance results">
+          </div>
+        </div>
+
+        <!-- PALETTE GENERATOR -->
+        <div class="tool-card fade-in" aria-labelledby="palette-tool-title">
+          <h3 class="tool-title" id="palette-tool-title">Accessible Palette Generator</h3>
+          <p class="tool-desc">
+            Pick a base color and generate a set of tints and shades. Each one is checked against white and black to show which combinations pass WCAG AA.
+          </p>
+
+          <div class="palette-input-row">
+            <div class="palette-input-wrap">
+              <label for="base-color">Base color</label>
+              <div class="palette-color-row">
+                <input type="color" id="base-color-picker" value="#3b6fa0" aria-label="Base color picker" oninput="syncBaseColor()" />
+                <input type="text" id="base-color" class="hex-input" value="#3b6fa0" maxlength="7" aria-label="Base color hex value" oninput="syncBasePicker()" />
+              </div>
+            </div>
+            <button class="gen-btn" onclick="generatePalette()" aria-label="Generate accessible color palette">Generate</button>
+          </div>
+
+          <div class="palette-grid" id="palette-grid" aria-label="Generated color swatches" aria-live="polite">
+            <p style="font-size:13px;color:var(--text-soft);">Click Generate to create a palette.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RESOURCES -->
+    <section id="resources" class="section-wrap" aria-labelledby="resources-heading">
+      <div class="section-label" aria-hidden="true">03 — Resources</div>
+      <h2 class="section-title" id="resources-heading">Further reading</h2>
+      <p class="section-intro">
+        These are the most useful resources for going deeper on accessibility.
+      </p>
+      <ul class="rule-list" aria-label="Accessibility resources" style="max-width:560px;">
+        <li><a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank" rel="noopener">WCAG 2.1 Quick Reference</a> — the official guidelines with techniques and failures</li>
+        <li><a href="https://webaim.org/resources/contrastchecker/" target="_blank" rel="noopener">WebAIM Contrast Checker</a> — industry standard contrast tool</li>
+        <li><a href="https://wave.webaim.org/" target="_blank" rel="noopener">WAVE Browser Extension</a> — overlay your page with accessibility annotations</li>
+        <li><a href="https://www.deque.com/axe/" target="_blank" rel="noopener">axe DevTools</a> — the most widely used automated accessibility testing engine</li>
+        <li><a href="https://www.nvaccess.org/download/" target="_blank" rel="noopener">NVDA Screen Reader</a> — free Windows screen reader for manual testing</li>
+        <li><a href="https://webaim.org/projects/million/" target="_blank" rel="noopener">WebAIM Million</a> — annual study of the top 1,000,000 websites' accessibility failures</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Built by <a href="https://github.com/zerintoma" target="_blank" rel="noopener">Zerin Toma</a> &nbsp;&middot;&nbsp; Reference: <a href="https://www.w3.org/WAI/standards-guidelines/wcag/" target="_blank" rel="noopener">WCAG 2.1</a></p>
+  </footer>
+
+  <script>
+    // =====================
+    // ACCORDION
+    // =====================
+    function toggleCard(btn) {
+      const card = btn.closest('.guide-card');
+      const isOpen = card.classList.contains('open');
+      card.classList.toggle('open');
+      btn.setAttribute('aria-expanded', !isOpen);
+    }
+
+    // =====================
+    // SCROLL REVEAL
+    // =====================
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // =====================
+    // CONTRAST TOOL
+    // =====================
+
+    function hexToRgb(hex) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      if (hex.length !== 6) return null;
+      const r = parseInt(hex.slice(0,2), 16);
+      const g = parseInt(hex.slice(2,4), 16);
+      const b = parseInt(hex.slice(4,6), 16);
+      if (isNaN(r) || isNaN(g) || isNaN(b)) return null;
+      return [r, g, b];
+    }
+
+    function luminance(r, g, b) {
+      const ch = [r, g, b].map(c => {
+        c /= 255;
+        return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+    }
+
+    function contrastRatio(hex1, hex2) {
+      const c1 = hexToRgb(hex1);
+      const c2 = hexToRgb(hex2);
+      if (!c1 || !c2) return null;
+      const l1 = luminance(...c1);
+      const l2 = luminance(...c2);
+      const light = Math.max(l1, l2);
+      const dark  = Math.min(l1, l2);
+      return (light + 0.05) / (dark + 0.05);
+    }
+
+    function updateContrast() {
+      const fg = document.getElementById('fg-color').value;
+      const bg = document.getElementById('bg-color').value;
+      const ratio = contrastRatio(fg, bg);
+
+      const preview = document.getElementById('contrast-preview');
+      const ratioNum = document.getElementById('ratio-num');
+      const badgeRow = document.getElementById('badge-row');
+
+      if (!ratio) {
+        ratioNum.textContent = '—';
+        badgeRow.innerHTML = '';
+        return;
+      }
+
+      preview.style.background = bg;
+      preview.style.color = fg;
+      ratioNum.textContent = ratio.toFixed(2) + ':1';
+
+      const aaLarge  = ratio >= 3;
+      const aaNormal = ratio >= 4.5;
+      const aaaLarge  = ratio >= 4.5;
+      const aaaNormal = ratio >= 7;
+
+      badgeRow.innerHTML = `
+        <span class="badge ${aaNormal ? 'pass' : 'fail'}" role="status">AA Normal: ${aaNormal ? 'Pass' : 'Fail'}</span>
+        <span class="badge ${aaLarge  ? 'pass' : 'fail'}" role="status">AA Large: ${aaLarge  ? 'Pass' : 'Fail'}</span>
+        <span class="badge ${aaaNormal ? 'pass' : 'fail'}" role="status">AAA Normal: ${aaaNormal ? 'Pass' : 'Fail'}</span>
+        <span class="badge ${aaaLarge  ? 'pass' : 'fail'}" role="status">AAA Large: ${aaaLarge  ? 'Pass' : 'Fail'}</span>
+      `;
+    }
+
+    function syncColor(type) {
+      const picker = document.getElementById(`${type}-color-picker`);
+      const text   = document.getElementById(`${type}-color`);
+      text.value = picker.value;
+      updateContrast();
+    }
+
+    function syncPicker(type) {
+      const text   = document.getElementById(`${type}-color`);
+      const picker = document.getElementById(`${type}-color-picker`);
+      const val = text.value.startsWith('#') ? text.value : '#' + text.value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+        picker.value = val;
+        updateContrast();
+      }
+    }
+
+    // Initialize contrast tool
+    updateContrast();
+
+    // =====================
+    // PALETTE GENERATOR
+    // =====================
+
+    function syncBaseColor() {
+      const picker = document.getElementById('base-color-picker');
+      document.getElementById('base-color').value = picker.value;
+    }
+
+    function syncBasePicker() {
+      const text = document.getElementById('base-color').value;
+      const picker = document.getElementById('base-color-picker');
+      if (/^#[0-9a-fA-F]{6}$/.test(text)) picker.value = text;
+    }
+
+    function hexToHsl(hex) {
+      const rgb = hexToRgb(hex);
+      if (!rgb) return null;
+      let [r, g, b] = rgb.map(v => v / 255);
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+      if (max === min) { h = s = 0; }
+      else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch(max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+          case g: h = ((b - r) / d + 2) / 6; break;
+          case b: h = ((r - g) / d + 4) / 6; break;
+        }
+      }
+      return [h * 360, s * 100, l * 100];
+    }
+
+    function hslToHex(h, s, l) {
+      h /= 360; s /= 100; l /= 100;
+      let r, g, b;
+      if (s === 0) { r = g = b = l; }
+      else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q-p)*6*t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q-p)*(2/3-t)*6;
+          return p;
+        };
+        const q = l < 0.5 ? l*(1+s) : l+s-l*s;
+        const p = 2*l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+      return '#' + [r,g,b].map(v => Math.round(v*255).toString(16).padStart(2,'0')).join('');
+    }
+
+    function generatePalette() {
+      const baseHex = document.getElementById('base-color').value;
+      const hsl = hexToHsl(baseHex);
+      if (!hsl) { alert('Please enter a valid hex color.'); return; }
+
+      const [h, s, l] = hsl;
+      const lightnessSteps = [95, 88, 78, 65, 52, 40, 30, 20, 12];
+      const names = ['50', '100', '200', '300', '400', '500', '600', '700', '800'];
+
+      const swatches = lightnessSteps.map((lightness, i) => {
+        const hex = hslToHex(h, Math.min(s, 90), lightness);
+        const vsWhite = contrastRatio(hex, '#ffffff');
+        const vsBlack = contrastRatio(hex, '#000000');
+        return { hex, name: names[i], vsWhite, vsBlack };
+      });
+
+      const grid = document.getElementById('palette-grid');
+      grid.innerHTML = swatches.map(s => {
+        const wPass = s.vsWhite >= 4.5;
+        const bPass = s.vsBlack >= 4.5;
+        return `
+          <div class="palette-swatch" role="listitem">
+            <div class="swatch-color" style="background:${s.hex};" aria-hidden="true"></div>
+            <div class="swatch-info">
+              <div class="swatch-hex">${s.hex}</div>
+              <div class="swatch-name">Shade ${s.name}</div>
+            </div>
+            <div class="swatch-badges" aria-label="Contrast results for ${s.hex}">
+              <span class="badge ${wPass ? 'pass' : 'fail'}" title="Contrast on white: ${s.vsWhite.toFixed(1)}:1">on white: ${wPass ? '✓ AA' : '✕ fail'}</span>
+              <span class="badge ${bPass ? 'pass' : 'fail'}" title="Contrast on black: ${s.vsBlack.toFixed(1)}:1">on black: ${bPass ? '✓ AA' : '✕ fail'}</span>
+            </div>
+            <button class="swatch-copy" onclick="copyHex('${s.hex}', this)" aria-label="Copy ${s.hex} to clipboard">Copy</button>
+          </div>`;
+      }).join('');
+    }
+
+    function copyHex(hex, btn) {
+      navigator.clipboard.writeText(hex).then(() => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = original; }, 1500);
+      });
+    }
+  </script>
+
+</body>
+</html>
