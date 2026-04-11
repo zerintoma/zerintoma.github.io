@@ -58,7 +58,6 @@
             transition: all 0.18s ease;
             opacity: 0.5;
         }
-        a:hover ~ #cursor, button:hover ~ #cursor { transform: scale(2); }
 
         /* ===== SCANLINES OVERLAY ===== */
         body::before {
@@ -169,7 +168,6 @@
             overflow: hidden;
         }
 
-        /* Animated grid background */
         #hero::before {
             content: '';
             position: absolute;
@@ -186,7 +184,6 @@
             50% { opacity: 1; }
         }
 
-        /* Radial glow */
         #hero::after {
             content: '';
             position: absolute;
@@ -242,9 +239,7 @@
         }
 
         /* ===== GLITCH TEXT ===== */
-        .glitch-wrap {
-            margin: 10px 0 20px;
-        }
+        .glitch-wrap { margin: 10px 0 20px; }
 
         .glitch {
             font-family: 'Orbitron', monospace;
@@ -298,9 +293,7 @@
         }
 
         .typewriter-line::before { content: '> '; color: var(--magenta); }
-
         .typed-text { border-right: 2px solid var(--gold); animation: blink 0.8s infinite; }
-
         @keyframes blink { 0%, 100% { border-color: var(--gold); } 50% { border-color: transparent; } }
 
         /* ===== BIO CARD ===== */
@@ -333,11 +326,7 @@
         }
 
         .bio-card:nth-child(2)::before { background: var(--magenta); }
-
-        .bio-card:hover {
-            border-color: rgba(0,245,255,0.4);
-            transform: translateY(-3px);
-        }
+        .bio-card:hover { border-color: rgba(0,245,255,0.4); transform: translateY(-3px); }
 
         .bio-card .card-label {
             font-family: 'Share Tech Mono', monospace;
@@ -350,13 +339,9 @@
 
         .bio-card:nth-child(2) .card-label { color: var(--magenta); }
 
-        .bio-card p {
-            font-size: 14px;
-            line-height: 1.75;
-            color: var(--text);
-        }
+        .bio-card p { font-size: 14px; line-height: 1.75; color: var(--text); }
 
-        /* ===== NAV LINKS ===== */
+        /* ===== HERO LINKS ===== */
         .hero-links {
             display: flex;
             gap: 16px;
@@ -388,17 +373,10 @@
             z-index: -1;
         }
 
-        .hero-links a:hover {
-            color: var(--bg);
-            border-color: var(--cyan);
-        }
-
+        .hero-links a:hover { color: var(--bg); border-color: var(--cyan); }
         .hero-links a:hover::before { left: 0; }
 
-        .hero-links a.primary {
-            border-color: var(--magenta);
-            color: var(--magenta);
-        }
+        .hero-links a.primary { border-color: var(--magenta); color: var(--magenta); }
         .hero-links a.primary::before { background: var(--magenta); }
         .hero-links a.primary:hover { color: var(--bg); border-color: var(--magenta); }
 
@@ -439,7 +417,6 @@
             padding: 120px 60px;
             max-width: 1100px;
             margin: 0 auto;
-            position: relative;
         }
 
         .section-header {
@@ -522,7 +499,6 @@
         }
 
         .cell:hover::after { width: 100%; }
-
         .cell i { font-size: 48px; transition: filter 0.3s; }
         .cell:hover i { filter: drop-shadow(0 0 8px currentColor); }
 
@@ -544,6 +520,107 @@
             margin: 0 auto;
         }
 
+        /* ===== PROJECT GRID ===== */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ===== PROJECT CARD ===== */
+        .project-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s, transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .project-card:hover { border-color: rgba(0,245,255,0.35); transform: translateY(-4px); }
+        .project-card:hover::before { transform: scaleX(1); }
+
+        .project-card .pc-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--cyan);
+            text-transform: uppercase;
+        }
+
+        .project-card h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 1px;
+        }
+
+        .project-card p {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.85;
+            flex: 1;
+        }
+
+        .project-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .project-tags span {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1px;
+            padding: 3px 10px;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--cyan);
+            text-transform: uppercase;
+            border: 1px solid rgba(0,245,255,0.3);
+            padding: 8px 18px;
+            transition: all 0.25s;
+            width: fit-content;
+        }
+
+        .project-link:hover {
+            background: var(--cyan);
+            color: var(--bg);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .project-link::after { content: ' →'; }
+
         /* ===== COMING SOON CARD ===== */
         .coming-soon-card {
             border: 1px dashed rgba(0, 245, 255, 0.15);
@@ -552,6 +629,11 @@
             position: relative;
             overflow: hidden;
             background: rgba(13, 27, 42, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
 
         .coming-soon-card::before {
@@ -574,14 +656,12 @@
             letter-spacing: 5px;
             color: var(--magenta);
             text-transform: uppercase;
-            margin-bottom: 16px;
         }
 
         .coming-soon-card h3 {
             font-family: 'Orbitron', monospace;
-            font-size: 18px;
+            font-size: 16px;
             color: var(--text-dim);
-            margin-bottom: 12px;
             letter-spacing: 1px;
         }
 
@@ -653,15 +733,6 @@
         .contact-item:hover { background: rgba(0,245,255,0.03); }
         .contact-item:hover::before { transform: scaleX(1); }
 
-        .contact-item .ci-icon {
-            font-size: 24px;
-            color: var(--text-dim);
-        }
-
-        .contact-item:nth-child(1):hover .ci-icon { color: var(--cyan); }
-        .contact-item:nth-child(2):hover .ci-icon { color: var(--magenta); }
-        .contact-item:nth-child(3):hover .ci-icon { color: var(--gold); }
-
         .contact-item .ci-label {
             font-family: 'Share Tech Mono', monospace;
             font-size: 10px;
@@ -698,7 +769,7 @@
 
         footer span .accent { color: var(--cyan); }
 
-        /* ===== FADE-IN ANIMATIONS ===== */
+        /* ===== ANIMATIONS ===== */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(24px); }
             to { opacity: 1; transform: translateY(0); }
@@ -710,10 +781,7 @@
             transition: opacity 0.7s ease, transform 0.7s ease;
         }
 
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
 
         /* ===== STATUS DOT ===== */
         .status-badge {
@@ -743,90 +811,39 @@
 
         /* ===== MOBILE ===== */
         @media (max-width: 768px) {
-            nav {
-                padding: 0 16px;
-                height: 60px;
-            }
-
-            nav .left a {
-                font-size: 15px;
-                letter-spacing: 2px;
-            }
-
-            nav .right {
-                gap: 2px;
-            }
-
-            nav .right a {
-                font-size: 10px;
-                padding: 5px 7px;
-                letter-spacing: 0.5px;
-            }
-
+            nav { padding: 0 16px; height: 60px; }
+            nav .left a { font-size: 15px; letter-spacing: 2px; }
+            nav .right { gap: 2px; }
+            nav .right a { font-size: 10px; padding: 5px 7px; letter-spacing: 0.5px; }
             nav .right a .nav-label { display: none; }
-
-            nav .right a.nav-skills,
-            nav .right a.nav-projects {
-                display: none;
-            }
-
+            nav .right a.nav-skills, nav .right a.nav-projects { display: none; }
             nav .right a.nav-github::after { content: 'GH'; }
             nav .right a.nav-linkedin::after { content: 'LI'; }
-            nav .right a.nav-github,
-            nav .right a.nav-linkedin {
-                font-size: 10px;
-                padding: 5px 8px;
-                border: 1px solid var(--border);
-                color: var(--text-dim);
-                letter-spacing: 1px;
-            }
-
-            nav .right a.contact-btn {
-                font-size: 10px;
-                padding: 5px 10px;
-                letter-spacing: 0.5px;
-            }
-
+            nav .right a.nav-github, nav .right a.nav-linkedin { font-size: 10px; padding: 5px 8px; border: 1px solid var(--border); color: var(--text-dim); letter-spacing: 1px; }
+            nav .right a.contact-btn { font-size: 10px; padding: 5px 10px; letter-spacing: 0.5px; }
             #hero { padding: 80px 20px 60px; }
-
             .bio-grid { grid-template-columns: 1fr; }
-
             #skills, #projects, #contact { padding: 80px 24px; }
-
             .contact-grid { grid-template-columns: 1fr; }
             .contact-item { border-right: none; border-bottom: 1px solid var(--border); }
             .contact-item:last-child { border-bottom: none; }
-
             footer { flex-direction: column; gap: 8px; text-align: center; padding: 20px; }
-
             .hero-links { gap: 10px; }
             .hero-links a { padding: 10px 18px; font-size: 11px; }
         }
 
-        /* Extra small screens */
         @media (max-width: 380px) {
-            nav .left a {
-                font-size: 13px;
-                letter-spacing: 1px;
-            }
-            nav .right a.nav-github,
-            nav .right a.nav-linkedin {
-                padding: 4px 6px;
-            }
-            nav .right a.contact-btn {
-                padding: 4px 8px;
-                font-size: 9px;
-            }
+            nav .left a { font-size: 13px; letter-spacing: 1px; }
+            nav .right a.nav-github, nav .right a.nav-linkedin { padding: 4px 6px; }
+            nav .right a.contact-btn { padding: 4px 8px; font-size: 9px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Custom cursor -->
     <div id="cursor"></div>
     <div id="cursor-ring"></div>
 
-    <!-- NAV -->
     <nav>
         <div class="left">
             <a href="/">ZT_</a>
@@ -842,7 +859,7 @@
 
     <main>
 
-        <!-- ====== HERO ====== -->
+        <!-- HERO -->
         <section id="hero">
             <div class="hero-inner">
 
@@ -851,7 +868,6 @@
                     <span>Available for opportunities</span>
                 </div>
 
-                <!-- ASCII Art of "ZERIN" -->
                 <div class="ascii-container">
                     <div class="ascii-scanline"></div>
                     <pre class="ascii-art">
@@ -896,7 +912,7 @@
             </div>
         </section>
 
-        <!-- ====== SKILLS ====== -->
+        <!-- SKILLS -->
         <section id="skills">
             <div class="reveal">
                 <div class="section-header">
@@ -931,7 +947,7 @@
             </div>
         </section>
 
-        <!-- ====== PROJECTS ====== -->
+        <!-- PROJECTS -->
         <section id="projects">
             <div class="reveal">
                 <div class="section-header">
@@ -942,19 +958,42 @@
                 <p class="section-desc">// Things I've made. More in the pipeline.</p>
             </div>
 
-            <div class="reveal">
+            <div class="projects-grid reveal">
+
+                <!-- Web Accessibility Guide -->
+                <div class="project-card">
+                    <div class="pc-tag">// 01 &nbsp; Web &nbsp; · &nbsp; Accessibility</div>
+                    <h3>Web Accessibility Guide</h3>
+                    <p>
+                        A full WCAG 2.1 reference built entirely from scratch in HTML, CSS, and vanilla JS.
+                        Includes a live contrast ratio checker, an accessible color palette generator,
+                        a colorblind simulator using real color transformation matrices, and an interactive
+                        sandbox where you can toggle accessibility failures on and off to see exactly what
+                        breaks — and why it matters.
+                    </p>
+                    <div class="project-tags">
+                        <span>HTML</span>
+                        <span>CSS</span>
+                        <span>JavaScript</span>
+                        <span>WCAG 2.1</span>
+                    </div>
+                    <a href="webacessibility.html" class="project-link">View Project</a>
+                </div>
+
+                <!-- Coming Soon -->
                 <div class="coming-soon-card">
                     <div class="cs-label"><span class="blink-dot"></span>// In development</div>
-                    <h3>Projects Coming Soon</h3>
+                    <h3>More Projects Coming Soon</h3>
                     <p>
                         Currently building across web development, Python, and creative tech.<br>
-                        Projects will be published here as they're completed — follow along on GitHub for updates.
+                        Follow along on GitHub for updates as things ship.
                     </p>
                 </div>
+
             </div>
         </section>
 
-        <!-- ====== CONTACT ====== -->
+        <!-- CONTACT -->
         <section id="contact">
             <div class="reveal">
                 <div class="section-header">
@@ -989,14 +1028,13 @@
 
     </main>
 
-    <!-- FOOTER -->
     <footer>
         <span>© 2025 <span class="accent">Zerin Toma</span></span>
         <span>Built with <span class="accent">HTML · CSS · JS</span></span>
     </footer>
 
     <script>
-        // ===== CURSOR =====
+        // CURSOR
         const cursor = document.getElementById('cursor');
         const ring = document.getElementById('cursor-ring');
         let mx = 0, my = 0, rx = 0, ry = 0;
@@ -1017,7 +1055,7 @@
             el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; ring.style.opacity = '0.5'; });
         });
 
-        // ===== TYPEWRITER =====
+        // TYPEWRITER
         const phrases = [
             'Building at the intersection of code & creativity.',
             'Exploring cybersecurity & software development.',
@@ -1039,7 +1077,7 @@
         }
         setTimeout(type, 2800);
 
-        // ===== SCROLL REVEAL =====
+        // SCROLL REVEAL
         const observer = new IntersectionObserver(entries => {
             entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
         }, { threshold: 0.12 });
