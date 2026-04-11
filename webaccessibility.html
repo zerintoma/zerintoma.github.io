@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="A practical guide to web accessibility covering WCAG guidelines, contrast checking, and color palette generation." />
+  <meta name="description" content="A practical guide to web accessibility covering WCAG guidelines, contrast checking, color palette generation, a colorblind simulator, and an interactive accessibility sandbox." />
   <title>Web Accessibility Guide</title>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
@@ -114,10 +114,8 @@
       font-weight: 400;
     }
 
-    .nav-links a:hover {
-      background: var(--surface2);
-      color: var(--text);
-    }
+    .nav-links a:hover { background: var(--surface2); color: var(--text); }
+    .nav-links a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
     /* =====================
        HERO
@@ -166,30 +164,10 @@
       flex-wrap: wrap;
     }
 
-    .hero-stat {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .hero-stat .num {
-      font-family: 'Lora', serif;
-      font-size: 28px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1;
-    }
-
-    .hero-stat .label {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .hero-divider {
-      width: 1px;
-      background: var(--border2);
-      align-self: stretch;
-    }
+    .hero-stat { display: flex; flex-direction: column; gap: 2px; }
+    .hero-stat .num { font-family: 'Lora', serif; font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
+    .hero-stat .label { font-size: 12px; color: var(--text-soft); }
+    .hero-divider { width: 1px; background: var(--border2); align-self: stretch; }
 
     /* =====================
        SECTION WRAPPER
@@ -230,11 +208,7 @@
     /* =====================
        GUIDE CARDS (accordion)
     ===================== */
-    .guide-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .guide-grid { display: flex; flex-direction: column; gap: 10px; }
 
     .guide-card {
       background: var(--surface);
@@ -289,20 +263,10 @@
 
     .guide-card.open .guide-chevron { transform: rotate(180deg); }
 
-    .guide-body {
-      display: none;
-      padding: 0 22px 22px 72px;
-    }
-
+    .guide-body { display: none; padding: 0 22px 22px 72px; }
     .guide-card.open .guide-body { display: block; }
 
-    .guide-body p {
-      font-size: 14px;
-      color: var(--text-mid);
-      line-height: 1.8;
-      margin-bottom: 14px;
-    }
-
+    .guide-body p { font-size: 14px; color: var(--text-mid); line-height: 1.8; margin-bottom: 14px; }
     .guide-body p:last-child { margin-bottom: 0; }
 
     .rule-list {
@@ -326,8 +290,7 @@
       position: absolute;
       left: 0;
       top: 9px;
-      width: 6px;
-      height: 6px;
+      width: 6px; height: 6px;
       border-radius: 50%;
       background: var(--border2);
     }
@@ -342,21 +305,8 @@
       margin-top: 14px;
     }
 
-    .tip-box .tip-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--sage);
-      margin-bottom: 6px;
-    }
-
-    .tip-box p {
-      font-size: 13px;
-      color: #2d5c3e;
-      margin-bottom: 0;
-      line-height: 1.65;
-    }
+    .tip-box .tip-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--sage); margin-bottom: 6px; }
+    .tip-box p { font-size: 13px; color: #2d5c3e; margin-bottom: 0; line-height: 1.65; }
 
     .warn-box {
       background: var(--terra-light);
@@ -366,21 +316,8 @@
       margin-top: 14px;
     }
 
-    .warn-box .warn-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--terracotta);
-      margin-bottom: 6px;
-    }
-
-    .warn-box p {
-      font-size: 13px;
-      color: #7a3626;
-      margin-bottom: 0;
-      line-height: 1.65;
-    }
+    .warn-box .warn-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--terracotta); margin-bottom: 6px; }
+    .warn-box p { font-size: 13px; color: #7a3626; margin-bottom: 0; line-height: 1.65; }
 
     code {
       font-family: 'DM Mono', monospace;
@@ -426,52 +363,17 @@
       padding: 28px;
     }
 
-    .tool-title {
-      font-family: 'Lora', serif;
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .tool-desc {
-      font-size: 13px;
-      color: var(--text-mid);
-      margin-bottom: 22px;
-      line-height: 1.65;
-    }
+    .tool-title { font-family: 'Lora', serif; font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+    .tool-desc { font-size: 13px; color: var(--text-mid); margin-bottom: 22px; line-height: 1.65; }
 
     /* --- CONTRAST TOOL --- */
-    .color-inputs {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .color-input-wrap {
-      flex: 1;
-      min-width: 110px;
-    }
-
-    .color-input-wrap label {
-      display: block;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: var(--text-soft);
-      margin-bottom: 6px;
-    }
-
-    .color-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .color-inputs { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .color-input-wrap { flex: 1; min-width: 110px; }
+    .color-input-wrap label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-soft); margin-bottom: 6px; }
+    .color-row { display: flex; align-items: center; gap: 8px; }
 
     input[type="color"] {
-      width: 38px;
-      height: 38px;
+      width: 38px; height: 38px;
       border: 1px solid var(--border);
       border-radius: 6px;
       cursor: pointer;
@@ -492,7 +394,7 @@
       transition: border-color 0.15s;
     }
 
-    .hex-input:focus { border-color: var(--blue); }
+    .hex-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,111,160,0.15); }
 
     .contrast-preview {
       border-radius: var(--radius-sm);
@@ -502,42 +404,14 @@
       transition: background 0.2s, color 0.2s;
     }
 
-    .contrast-preview .preview-text {
-      font-family: 'Lora', serif;
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
+    .contrast-preview .preview-text { font-family: 'Lora', serif; font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+    .contrast-preview .preview-small { font-size: 13px; opacity: 0.85; }
 
-    .contrast-preview .preview-small {
-      font-size: 13px;
-      opacity: 0.85;
-    }
+    .ratio-display { text-align: center; margin-bottom: 14px; }
+    .ratio-num { font-family: 'Lora', serif; font-size: 36px; font-weight: 600; line-height: 1; }
+    .ratio-label { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
 
-    .ratio-display {
-      text-align: center;
-      margin-bottom: 14px;
-    }
-
-    .ratio-num {
-      font-family: 'Lora', serif;
-      font-size: 36px;
-      font-weight: 600;
-      line-height: 1;
-    }
-
-    .ratio-label {
-      font-size: 12px;
-      color: var(--text-soft);
-      margin-top: 2px;
-    }
-
-    .badge-row {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+    .badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 
     .badge {
       font-family: 'DM Mono', monospace;
@@ -552,32 +426,10 @@
     .badge.fail { background: var(--terra-light); color: var(--terracotta); border: 1px solid #f0c4b8; }
 
     /* --- PALETTE TOOL --- */
-    .palette-input-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
-      align-items: flex-end;
-    }
-
-    .palette-input-wrap {
-      flex: 1;
-    }
-
-    .palette-input-wrap label {
-      display: block;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: var(--text-soft);
-      margin-bottom: 6px;
-    }
-
-    .palette-color-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    .palette-input-row { display: flex; gap: 10px; margin-bottom: 16px; align-items: flex-end; }
+    .palette-input-wrap { flex: 1; }
+    .palette-input-wrap label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-soft); margin-bottom: 6px; }
+    .palette-color-row { display: flex; gap: 8px; align-items: center; }
 
     .gen-btn {
       padding: 10px 18px;
@@ -597,12 +449,9 @@
 
     .gen-btn:hover { background: #333; }
     .gen-btn:active { transform: scale(0.97); }
+    .gen-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 
-    .palette-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .palette-grid { display: flex; flex-direction: column; gap: 8px; }
 
     .palette-swatch {
       display: flex;
@@ -613,35 +462,11 @@
       border: 1px solid var(--border);
     }
 
-    .swatch-color {
-      width: 52px;
-      height: 52px;
-      flex-shrink: 0;
-    }
-
-    .swatch-info {
-      flex: 1;
-    }
-
-    .swatch-hex {
-      font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      color: var(--text);
-      font-weight: 500;
-    }
-
-    .swatch-name {
-      font-size: 12px;
-      color: var(--text-soft);
-      margin-top: 1px;
-    }
-
-    .swatch-badges {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-right: 12px;
-    }
+    .swatch-color { width: 52px; height: 52px; flex-shrink: 0; }
+    .swatch-info { flex: 1; }
+    .swatch-hex { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); font-weight: 500; }
+    .swatch-name { font-size: 12px; color: var(--text-soft); margin-top: 1px; }
+    .swatch-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-right: 12px; }
 
     .swatch-copy {
       background: none;
@@ -661,6 +486,308 @@
     .swatch-copy:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
     /* =====================
+       COLORBLIND SIMULATOR
+    ===================== */
+    #simulator .sim-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .sim-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      background: var(--surface);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 400;
+    }
+
+    .sim-btn:hover { border-color: var(--border2); color: var(--text); background: var(--surface2); }
+    .sim-btn.active { background: var(--text); color: white; border-color: var(--text); font-weight: 500; }
+    .sim-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+    .sim-canvas-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      background: var(--surface);
+    }
+
+    .sim-canvas-wrap canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .sim-label {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(28,25,23,0.75);
+      color: white;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      letter-spacing: 0.5px;
+      pointer-events: none;
+    }
+
+    .sim-upload {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .upload-btn {
+      padding: 8px 16px;
+      border: 1px dashed var(--border2);
+      border-radius: 8px;
+      background: var(--bg);
+      font-size: 13px;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .upload-btn:hover { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
+    .upload-btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+    #file-input { display: none; }
+
+    .sim-hint { font-size: 12px; color: var(--text-soft); }
+
+    /* =====================
+       BREAK-IT SANDBOX
+    ===================== */
+    #sandbox .sandbox-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 700px) { #sandbox .sandbox-layout { grid-template-columns: 1fr; } }
+
+    .sandbox-controls {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .sandbox-controls h3 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-soft);
+      margin-bottom: 14px;
+    }
+
+    .toggle-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .toggle-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .toggle-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: var(--terracotta);
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .toggle-item input[type="checkbox"]:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+
+    .toggle-item-label { font-size: 13px; color: var(--text); line-height: 1.4; }
+    .toggle-item-sub { font-size: 11px; color: var(--text-soft); margin-top: 1px; }
+
+    .sandbox-reset {
+      margin-top: 16px;
+      width: 100%;
+      padding: 9px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .sandbox-reset:hover { background: var(--surface2); }
+    .sandbox-reset:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+    .sandbox-preview {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .sandbox-preview-inner {
+      padding: 28px;
+      background: white;
+      transition: all 0.3s;
+    }
+
+    /* sandbox states */
+    .sandbox-preview-inner.bad-contrast { color: #bbb !important; }
+    .sandbox-preview-inner.bad-contrast .sb-text { color: #ccc !important; }
+    .sandbox-preview-inner.bad-contrast .sb-heading { color: #ddd !important; }
+    .sandbox-preview-inner.no-focus * { outline: none !important; }
+    .sandbox-preview-inner.bad-structure .sb-h2 { font-size: 13px; font-style: italic; font-weight: normal; }
+    .sandbox-preview-inner.bad-structure .sb-h3 { font-size: 22px; font-weight: 700; }
+    .sandbox-preview-inner.no-labels .sb-label { display: none; }
+    .sandbox-preview-inner.no-alt-text .sb-img-wrap::after {
+      content: 'IMG_20240311_142203.jpg';
+      display: block;
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    /* sandbox preview content styles */
+    .sb-heading {
+      font-family: 'Lora', serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+      transition: color 0.3s;
+    }
+
+    .sb-h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 14px 0 6px;
+      transition: all 0.3s;
+    }
+
+    .sb-h3 {
+      font-size: 13px;
+      color: var(--text-mid);
+      margin: 8px 0 4px;
+      transition: all 0.3s;
+    }
+
+    .sb-text {
+      font-size: 14px;
+      color: var(--text-mid);
+      line-height: 1.7;
+      margin-bottom: 14px;
+      transition: color 0.3s;
+    }
+
+    .sb-img-wrap { margin-bottom: 14px; }
+
+    .sb-img {
+      width: 100%;
+      height: 80px;
+      background: linear-gradient(135deg, #e0d8f0 0%, #b8d4e8 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .sb-form-group { margin-bottom: 12px; }
+
+    .sb-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+      transition: opacity 0.3s;
+    }
+
+    .sb-input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      outline-offset: 2px;
+    }
+
+    .sb-input:focus { outline: 2px solid var(--blue); }
+
+    .sb-btn {
+      padding: 9px 18px;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    .sb-btn:focus { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+    .sandbox-status {
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+      padding: 10px 16px;
+      font-size: 12px;
+      color: var(--text-soft);
+      font-family: 'DM Mono', monospace;
+      min-height: 38px;
+    }
+
+    .sandbox-status span { color: var(--terracotta); font-weight: 500; }
+
+    /* score badge */
+    .score-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .score-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 100px;
+      border: 1px solid;
+      transition: all 0.3s;
+    }
+
+    .score-good { background: var(--sage-light); color: var(--sage); border-color: var(--sage-mid); }
+    .score-warn { background: var(--amber-light); color: var(--amber); border-color: #e8c87a; }
+    .score-bad  { background: var(--terra-light); color: var(--terracotta); border-color: #f0c4b8; }
+
+    /* =====================
        FADE-IN ANIMATION
     ===================== */
     .fade-in {
@@ -669,12 +796,7 @@
       transition: opacity 0.55s ease, transform 0.55s ease;
     }
 
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* stagger */
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
     .fade-in:nth-child(2) { transition-delay: 0.08s; }
     .fade-in:nth-child(3) { transition-delay: 0.16s; }
     .fade-in:nth-child(4) { transition-delay: 0.24s; }
@@ -692,6 +814,7 @@
     }
 
     footer a { color: var(--text-mid); }
+    footer a:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 2px; }
 
     /* =====================
        RESPONSIVE
@@ -703,6 +826,8 @@
       .hero-stats { gap: 20px; }
       .tool-card { padding: 20px; }
       .guide-body { padding-left: 22px; }
+      .sandbox-controls { padding: 16px; }
+      .sandbox-preview-inner { padding: 20px; }
     }
   </style>
 </head>
@@ -710,13 +835,14 @@
 
   <a href="#main" class="skip-link">Skip to main content</a>
 
-  <!-- NAV -->
   <nav aria-label="Main navigation">
     <div class="nav-inner">
-      <a href="#" class="nav-logo">Web Accessibility</a>
+      <a href="#hero" class="nav-logo">Web Accessibility</a>
       <ul class="nav-links" role="list">
         <li><a href="#guide">Guidelines</a></li>
         <li><a href="#tools">Tools</a></li>
+        <li><a href="#simulator">Simulator</a></li>
+        <li><a href="#sandbox">Sandbox</a></li>
         <li><a href="#resources">Resources</a></li>
       </ul>
     </div>
@@ -729,9 +855,7 @@
       <div class="hero-tag" aria-hidden="true">WCAG 2.1 Reference</div>
       <h1 id="hero-heading">The web works best when it works for everyone.</h1>
       <p>
-        Web accessibility is about making sure people with disabilities can use the web just as well as everyone else.
-        That covers visual impairments, hearing loss, motor difficulties, and cognitive differences.
-        This guide breaks down the main guidelines, explains what actually goes wrong on most sites, and gives you practical ways to fix it.
+        This guide covers the main WCAG guidelines, what tends to go wrong on real sites, and some interactive tools to actually feel what inaccessible design is like from a user's perspective.
       </p>
       <div class="hero-stats" role="list" aria-label="Key accessibility statistics">
         <div class="hero-stat" role="listitem">
@@ -756,71 +880,51 @@
       <div class="section-label" aria-hidden="true">01 — Guidelines</div>
       <h2 class="section-title" id="guide-heading">What the guidelines actually cover</h2>
       <p class="section-intro">
-        WCAG 2.1 is organized around four principles. Everything falls under one of them:
-        content must be Perceivable, Operable, Understandable, and Robust (POUR).
-        Here's what that means for real websites.
+        WCAG 2.1 is organized around four principles — Perceivable, Operable, Understandable, and Robust (POUR). Everything falls under one of them. Here's what that looks like on real websites.
       </p>
 
       <div class="guide-grid" role="list">
 
-        <!-- TEXT & TYPOGRAPHY -->
         <div class="guide-card fade-in" role="listitem">
-          <button
-            class="guide-card-header"
-            aria-expanded="false"
-            aria-controls="gc-text"
-            onclick="toggleCard(this)"
-          >
+          <button class="guide-card-header" aria-expanded="false" aria-controls="gc-text" onclick="toggleCard(this)">
             <div class="guide-icon" style="background:#eaf2ec;" aria-hidden="true">Aa</div>
             <span>Text &amp; Typography</span>
             <span class="guide-chevron" aria-hidden="true">▼</span>
           </button>
           <div class="guide-body" id="gc-text" role="region" aria-label="Text and Typography details">
-            <p>
-              Text is the backbone of most websites, and it's also one of the most commonly broken things from an accessibility standpoint.
-              The issues usually aren't dramatic — they're small decisions that stack up.
-            </p>
+            <p>Text is the backbone of most websites, and it's also one of the most commonly broken things from an accessibility standpoint. The issues usually aren't dramatic — they're small decisions that stack up.</p>
             <ul class="rule-list" aria-label="Text requirements">
               <li><strong>Minimum font size:</strong> 16px for body text is a solid baseline. WCAG doesn't name a specific size, but anything under 12px is almost always a problem.</li>
-              <li><strong>Line height:</strong> At least 1.5x the font size for body text. Tight line spacing makes reading significantly harder for people with dyslexia or cognitive disabilities.</li>
+              <li><strong>Line height:</strong> At least 1.5x the font size for body text. Tight line spacing makes reading significantly harder for people with dyslexia.</li>
               <li><strong>Line length:</strong> Keep paragraphs between 60 and 80 characters wide. Very long lines force the eye to travel too far, which causes reading errors.</li>
-              <li><strong>Text spacing:</strong> Users need to be able to override letter spacing, word spacing, and line height without content breaking or overlapping.</li>
-              <li><strong>Avoid justified text:</strong> Full justification creates irregular gaps between words that disrupt reading flow for people with dyslexia.</li>
+              <li><strong>Text spacing:</strong> Users need to be able to override letter spacing, word spacing, and line height without content breaking.</li>
+              <li><strong>Avoid justified text:</strong> Full justification creates irregular gaps between words that disrupt reading flow.</li>
               <li><strong>Don't use text inside images:</strong> Screen readers can't read it, it doesn't scale, and it breaks at high zoom levels.</li>
             </ul>
             <div class="warn-box">
               <div class="warn-label">Common mistake</div>
-              <p>Setting <code>user-select: none</code> or <code>pointer-events: none</code> on body text. Users who rely on text-to-speech browser extensions need to be able to select and copy text.</p>
+              <p>Setting <code>user-select: none</code> on body text. Users who rely on text-to-speech extensions need to be able to select and copy text.</p>
             </div>
             <div class="tip-box">
               <div class="tip-label">Quick fix</div>
-              <p>Add this to your CSS: <code>p { max-width: 70ch; line-height: 1.6; }</code>. That single rule handles line length and spacing for most body text.</p>
+              <p>Add this to your CSS: <code>p { max-width: 70ch; line-height: 1.6; }</code>. That one rule handles line length and spacing for most body text.</p>
             </div>
           </div>
         </div>
 
-        <!-- HEADINGS -->
         <div class="guide-card fade-in" role="listitem">
-          <button
-            class="guide-card-header"
-            aria-expanded="false"
-            aria-controls="gc-headings"
-            onclick="toggleCard(this)"
-          >
+          <button class="guide-card-header" aria-expanded="false" aria-controls="gc-headings" onclick="toggleCard(this)">
             <div class="guide-icon" style="background:#edf3fa;" aria-hidden="true">H1</div>
             <span>Headings &amp; Page Structure</span>
             <span class="guide-chevron" aria-hidden="true">▼</span>
           </button>
           <div class="guide-body" id="gc-headings" role="region" aria-label="Headings and Page Structure details">
-            <p>
-              Screen reader users often navigate pages entirely by jumping between headings, similar to how sighted users skim.
-              If your heading structure is wrong, these users get a completely broken experience.
-            </p>
+            <p>Screen reader users often navigate entirely by jumping between headings — think of it like skimming. If your heading structure is broken, they're basically flying blind.</p>
             <ul class="rule-list" aria-label="Heading requirements">
               <li><strong>One H1 per page:</strong> The H1 is the page title. Using more than one confuses both screen readers and search engines.</li>
-              <li><strong>Don't skip levels:</strong> H1 should be followed by H2, H2 by H3, and so on. Jumping from H2 to H4 breaks the outline structure.</li>
-              <li><strong>Headings are for structure, not style:</strong> Don't pick heading levels based on how big you want text to look. Style with CSS, use headings for hierarchy.</li>
-              <li><strong>Every section needs a heading:</strong> If a user is navigating by heading and there's a long section with no heading, they have no way to identify it.</li>
+              <li><strong>Don't skip levels:</strong> H1 → H2 → H3 in order. Jumping from H2 to H4 breaks the outline.</li>
+              <li><strong>Headings are for structure, not style:</strong> Don't choose heading levels based on how big you want text to look. That's what CSS is for.</li>
+              <li><strong>Every section needs a heading:</strong> If there's a long section with no heading, screen reader users have no way to identify or navigate to it.</li>
             </ul>
             <pre aria-label="Example of correct heading structure"><span class="c">&lt;!-- Correct --&gt;</span>
 <span class="k">&lt;h1&gt;</span>Accessibility Guide<span class="k">&lt;/h1&gt;</span>
@@ -833,70 +937,52 @@
   <span class="k">&lt;h3&gt;</span>Text Guidelines<span class="k">&lt;/h3&gt;</span> <span class="c">&lt;!-- skipped H2 --&gt;</span></pre>
             <div class="tip-box">
               <div class="tip-label">Quick check</div>
-              <p>Open your browser's developer tools and search the page for all heading tags. Read them in order out loud. If they don't form a logical outline of the page, fix the structure.</p>
+              <p>Open dev tools, search for all heading tags, and read them in order out loud. If they don't form a logical outline of the page, the structure needs fixing.</p>
             </div>
           </div>
         </div>
 
-        <!-- COLOR & CONTRAST -->
         <div class="guide-card fade-in" role="listitem">
-          <button
-            class="guide-card-header"
-            aria-expanded="false"
-            aria-controls="gc-contrast"
-            onclick="toggleCard(this)"
-          >
+          <button class="guide-card-header" aria-expanded="false" aria-controls="gc-contrast" onclick="toggleCard(this)">
             <div class="guide-icon" style="background:#fdf6e3;" aria-hidden="true">◑</div>
             <span>Color &amp; Contrast</span>
             <span class="guide-chevron" aria-hidden="true">▼</span>
           </button>
           <div class="guide-body" id="gc-contrast" role="region" aria-label="Color and Contrast details">
-            <p>
-              Contrast is the ratio between the brightness of foreground text and its background.
-              Low contrast is one of the most common WCAG failures, and it affects everyone in difficult lighting conditions, not just people with visual impairments.
-            </p>
+            <p>Contrast is the ratio between text brightness and its background. Low contrast is one of the most common WCAG failures — and honestly, it affects everyone when you're on your phone in sunlight, not just people with visual impairments.</p>
             <ul class="rule-list" aria-label="Contrast requirements">
-              <li><strong>Normal text (under 18pt):</strong> Minimum 4.5:1 contrast ratio against the background.</li>
+              <li><strong>Normal text (under 18pt):</strong> Minimum 4.5:1 contrast ratio.</li>
               <li><strong>Large text (18pt+ or 14pt+ bold):</strong> Minimum 3:1 contrast ratio.</li>
               <li><strong>UI components and icons:</strong> Minimum 3:1 against adjacent colors.</li>
-              <li><strong>Never use color alone to convey meaning:</strong> "Required fields are shown in red" fails users who are colorblind. Add an asterisk or label too.</li>
-              <li><strong>Focus indicators need contrast too:</strong> The outline around a focused button must meet the 3:1 requirement against the surrounding area.</li>
+              <li><strong>Never use color alone to convey meaning:</strong> "Required fields are shown in red" fails colorblind users. Add an asterisk or label too.</li>
+              <li><strong>Focus indicators need contrast too:</strong> The outline around a focused button must meet 3:1 against the surrounding area.</li>
             </ul>
             <div class="warn-box">
               <div class="warn-label">Very common failure</div>
-              <p>Placeholder text in form inputs. Placeholder text is almost always styled with low-opacity gray that fails contrast requirements. Use visible labels instead, or style placeholders to meet the 4.5:1 threshold.</p>
+              <p>Placeholder text in form inputs. It's almost always low-opacity gray that fails contrast requirements. Use real visible labels — placeholders aren't a substitute anyway.</p>
             </div>
           </div>
         </div>
 
-        <!-- IMAGES & ALT TEXT -->
         <div class="guide-card fade-in" role="listitem">
-          <button
-            class="guide-card-header"
-            aria-expanded="false"
-            aria-controls="gc-images"
-            onclick="toggleCard(this)"
-          >
+          <button class="guide-card-header" aria-expanded="false" aria-controls="gc-images" onclick="toggleCard(this)">
             <div class="guide-icon" style="background:#fdf0ec;" aria-hidden="true">🖼</div>
             <span>Images &amp; Alt Text</span>
             <span class="guide-chevron" aria-hidden="true">▼</span>
           </button>
           <div class="guide-body" id="gc-images" role="region" aria-label="Images and Alt Text details">
-            <p>
-              Screen readers announce images by reading their alt text. If alt text is missing, the reader often reads out the filename instead —
-              something like "IMG_20240311_142203.jpg", which is useless. If it's an SVG or icon with no alt, it might just say "image".
-            </p>
+            <p>When alt text is missing, screen readers often fall back to reading the filename — something like "IMG_20240311_142203.jpg". Not exactly useful.</p>
             <ul class="rule-list" aria-label="Alt text requirements">
-              <li><strong>Informative images:</strong> Write alt text that describes what the image conveys in context, not just what it looks like. For a chart, describe the trend, not the colors.</li>
-              <li><strong>Decorative images:</strong> Use an empty alt attribute — <code>alt=""</code> — so screen readers skip it. Don't just leave alt out entirely.</li>
-              <li><strong>Functional images (linked or clickable):</strong> The alt text should describe the destination or action, not the image itself. A logo that links to the homepage should say "Home", not "Company logo".</li>
-              <li><strong>Complex images:</strong> Charts, diagrams, and infographics need a longer text description nearby — either visible on the page or via <code>aria-describedby</code>.</li>
+              <li><strong>Informative images:</strong> Describe what the image conveys, not just what it looks like. For a chart, describe the trend.</li>
+              <li><strong>Decorative images:</strong> Use <code>alt=""</code> so screen readers skip it. Don't leave alt out entirely — that's different.</li>
+              <li><strong>Functional images:</strong> Alt text should describe the destination or action. A logo linking to the homepage should say "Home", not "Company logo".</li>
+              <li><strong>Complex images:</strong> Charts and diagrams need a longer text description nearby or via <code>aria-describedby</code>.</li>
             </ul>
-            <pre aria-label="Alt text code examples"><span class="c">&lt;!-- Informative image --&gt;</span>
+            <pre aria-label="Alt text code examples"><span class="c">&lt;!-- Informative --&gt;</span>
 <span class="k">&lt;img</span> <span class="a">src</span>=<span class="s">"chart.png"</span>
-     <span class="a">alt</span>=<span class="s">"Bar chart showing revenue growth of 40% in Q3"</span><span class="k">&gt;</span>
+     <span class="a">alt</span>=<span class="s">"Bar chart: revenue up 40% in Q3"</span><span class="k">&gt;</span>
 
-<span class="c">&lt;!-- Decorative image --&gt;</span>
+<span class="c">&lt;!-- Decorative --&gt;</span>
 <span class="k">&lt;img</span> <span class="a">src</span>=<span class="s">"divider.png"</span> <span class="a">alt</span>=<span class="s">""</span> <span class="a">role</span>=<span class="s">"presentation"</span><span class="k">&gt;</span>
 
 <span class="c">&lt;!-- Linked logo --&gt;</span>
@@ -904,148 +990,46 @@
           </div>
         </div>
 
-        <!-- TABLES -->
         <div class="guide-card fade-in" role="listitem">
-          <button
-            class="guide-card-header"
-            aria-expanded="false"
-            aria-controls="gc-tables"
-            onclick="toggleCard(this)"
-          >
-            <div class="guide-icon" style="background:#edf3fa;" aria-hidden="true">⊞</div>
-            <span>Tables</span>
-            <span class="guide-chevron" aria-hidden="true">▼</span>
-          </button>
-          <div class="guide-body" id="gc-tables" role="region" aria-label="Tables details">
-            <p>
-              When a screen reader reads a table, it announces each cell along with its row and column headers so the user knows what the data means.
-              Without proper markup, users just hear a stream of numbers or values with no context.
-            </p>
-            <ul class="rule-list" aria-label="Table requirements">
-              <li><strong>Use <code>&lt;th&gt;</code> for headers:</strong> Don't style a regular <code>&lt;td&gt;</code> to look like a header. The <code>&lt;th&gt;</code> element gives it semantic meaning that assistive tech can use.</li>
-              <li><strong>Add <code>scope</code> attributes:</strong> <code>scope="col"</code> on column headers and <code>scope="row"</code> on row headers tells screen readers how headers relate to cells.</li>
-              <li><strong>Add a <code>&lt;caption&gt;</code>:</strong> This is the table's title and the first thing a screen reader announces. Without it, users don't know what the table is about before diving in.</li>
-              <li><strong>Never use tables for layout:</strong> CSS grid and flexbox exist for layout. Using tables for layout confuses screen readers that expect table structure to mean data relationships.</li>
-            </ul>
-            <pre aria-label="Accessible table code example"><span class="k">&lt;table&gt;</span>
-  <span class="k">&lt;caption&gt;</span>Q3 Sales by Region<span class="k">&lt;/caption&gt;</span>
-  <span class="k">&lt;thead&gt;</span>
-    <span class="k">&lt;tr&gt;</span>
-      <span class="k">&lt;th</span> <span class="a">scope</span>=<span class="s">"col"</span><span class="k">&gt;</span>Region<span class="k">&lt;/th&gt;</span>
-      <span class="k">&lt;th</span> <span class="a">scope</span>=<span class="s">"col"</span><span class="k">&gt;</span>Revenue<span class="k">&lt;/th&gt;</span>
-    <span class="k">&lt;/tr&gt;</span>
-  <span class="k">&lt;/thead&gt;</span>
-  <span class="k">&lt;tbody&gt;</span>
-    <span class="k">&lt;tr&gt;</span>
-      <span class="k">&lt;th</span> <span class="a">scope</span>=<span class="s">"row"</span><span class="k">&gt;</span>Northeast<span class="k">&lt;/th&gt;</span>
-      <span class="k">&lt;td&gt;</span>$420,000<span class="k">&lt;/td&gt;</span>
-    <span class="k">&lt;/tr&gt;</span>
-  <span class="k">&lt;/tbody&gt;</span>
-<span class="k">&lt;/table&gt;</span></pre>
-          </div>
-        </div>
-
-        <!-- SCREEN READERS -->
-        <div class="guide-card fade-in" role="listitem">
-          <button
-            class="guide-card-header"
-            aria-expanded="false"
-            aria-controls="gc-sr"
-            onclick="toggleCard(this)"
-          >
-            <div class="guide-icon" style="background:#eaf2ec;" aria-hidden="true">♪</div>
-            <span>How Screen Readers Work</span>
-            <span class="guide-chevron" aria-hidden="true">▼</span>
-          </button>
-          <div class="guide-body" id="gc-sr" role="region" aria-label="Screen Reader details">
-            <p>
-              A screen reader converts on-screen content into speech or braille output. It reads the accessibility tree — a version of the DOM that contains only semantic information.
-              Visual styling is mostly invisible to it.
-            </p>
-            <ul class="rule-list" aria-label="Screen reader considerations">
-              <li><strong>Announce dynamic changes:</strong> If content updates without a page reload (like a form error appearing), use <code>aria-live="polite"</code> so screen readers announce the change.</li>
-              <li><strong>Hidden content:</strong> <code>display: none</code> and <code>visibility: hidden</code> hide content from screen readers too. To hide visually but keep accessible, use the "visually hidden" CSS class instead.</li>
-              <li><strong>Icon-only buttons:</strong> A button with only an icon inside it will be announced as "button" with no description. Always add <code>aria-label="Close menu"</code> or similar.</li>
-              <li><strong>Reading order:</strong> Screen readers follow the DOM order, not the visual order. If you reorder elements visually with CSS, the reading order can become completely nonsensical.</li>
-              <li><strong>ARIA roles:</strong> Use ARIA roles to add semantic meaning when HTML elements alone aren't enough — but always prefer native HTML elements first. A <code>&lt;button&gt;</code> is better than a <code>&lt;div role="button"&gt;</code>.</li>
-            </ul>
-            <pre aria-label="Visually hidden CSS class and aria-live example"><span class="c">/* Keep content accessible but visually hidden */</span>
-<span class="k">.visually-hidden</span> {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  border: 0;
-}
-
-<span class="c">&lt;!-- Announce dynamic changes --&gt;</span>
-<span class="k">&lt;div</span> <span class="a">aria-live</span>=<span class="s">"polite"</span> <span class="a">aria-atomic</span>=<span class="s">"true"</span><span class="k">&gt;</span>
-  Form submitted successfully.
-<span class="k">&lt;/div&gt;</span></pre>
-          </div>
-        </div>
-
-        <!-- KEYBOARD NAVIGATION -->
-        <div class="guide-card fade-in" role="listitem">
-          <button
-            class="guide-card-header"
-            aria-expanded="false"
-            aria-controls="gc-keyboard"
-            onclick="toggleCard(this)"
-          >
+          <button class="guide-card-header" aria-expanded="false" aria-controls="gc-keyboard" onclick="toggleCard(this)">
             <div class="guide-icon" style="background:#fdf6e3;" aria-hidden="true">⌨</div>
             <span>Keyboard Navigation</span>
             <span class="guide-chevron" aria-hidden="true">▼</span>
           </button>
           <div class="guide-body" id="gc-keyboard" role="region" aria-label="Keyboard Navigation details">
-            <p>
-              Many people can't use a mouse — whether because of motor impairments, tremors, or simply preference.
-              Every interactive element on a page needs to be reachable and operable with a keyboard alone.
-            </p>
+            <p>Many people can't use a mouse — motor impairments, tremors, or just preference. Every interactive element needs to be reachable and usable with a keyboard alone.</p>
             <ul class="rule-list" aria-label="Keyboard navigation requirements">
-              <li><strong>Tab order must make sense:</strong> Pressing Tab should move through interactive elements in a logical order — usually left to right, top to bottom.</li>
-              <li><strong>Never remove focus outlines entirely:</strong> <code>outline: none</code> without a custom replacement is one of the most harmful things you can do. Keyboard users need to see where they are.</li>
-              <li><strong>Custom components need keyboard support:</strong> A dropdown menu, modal, or custom slider built in JavaScript needs keyboard event handlers. The Enter and Space keys should activate buttons. Arrow keys should move through options in a listbox.</li>
-              <li><strong>Modals must trap focus:</strong> When a modal opens, focus should stay inside it. The user should not be able to Tab to elements behind the overlay.</li>
-              <li><strong>Skip links:</strong> A "Skip to main content" link at the very top of the page lets keyboard users bypass navigation menus on every load. It can be visually hidden until focused.</li>
+              <li><strong>Tab order must make sense:</strong> Tab should move through interactive elements in a logical order — typically left to right, top to bottom.</li>
+              <li><strong>Never remove focus outlines:</strong> <code>outline: none</code> without a custom replacement is genuinely harmful. Keyboard users need to see where they are.</li>
+              <li><strong>Custom components need keyboard support:</strong> Dropdowns, modals, sliders — all need keyboard event handlers. Enter and Space activate buttons. Arrow keys move through listboxes.</li>
+              <li><strong>Modals must trap focus:</strong> When a modal opens, focus should stay inside it. Users shouldn't be able to Tab to elements behind the overlay.</li>
+              <li><strong>Skip links:</strong> A "Skip to main content" link at the very top lets keyboard users bypass nav menus every time they load a page.</li>
             </ul>
             <div class="tip-box">
               <div class="tip-label">Test it yourself</div>
-              <p>Close your mouse right now and try to use your own website with only the Tab, Enter, Space, and arrow keys. Most developers find at least two or three broken interactions the first time they try this.</p>
+              <p>Put your mouse away and try navigating your site with only Tab, Enter, Space, and arrow keys. Most developers find at least two or three broken interactions the first time they try this.</p>
             </div>
           </div>
         </div>
 
-        <!-- FORMS -->
         <div class="guide-card fade-in" role="listitem">
-          <button
-            class="guide-card-header"
-            aria-expanded="false"
-            aria-controls="gc-forms"
-            onclick="toggleCard(this)"
-          >
+          <button class="guide-card-header" aria-expanded="false" aria-controls="gc-forms" onclick="toggleCard(this)">
             <div class="guide-icon" style="background:#fdf0ec;" aria-hidden="true">✎</div>
             <span>Forms</span>
             <span class="guide-chevron" aria-hidden="true">▼</span>
           </button>
           <div class="guide-body" id="gc-forms" role="region" aria-label="Forms details">
-            <p>
-              Forms are where a lot of accessibility failures happen because there are so many small things to get right.
-              A user relying on a screen reader filling out an inaccessible form is one of the most frustrating experiences on the web.
-            </p>
+            <p>Forms are where a lot of accessibility failures pile up because there are so many small things to get right. Filling out an inaccessible form with a screen reader is one of the most frustrating experiences on the web.</p>
             <ul class="rule-list" aria-label="Form requirements">
-              <li><strong>Every input needs a label:</strong> Placeholder text is not a label. When a user starts typing, the placeholder disappears and there's no way to check what the field was asking for.</li>
-              <li><strong>Associate labels programmatically:</strong> Use <code>&lt;label for="inputId"&gt;</code> or wrap the input inside the label element. <code>aria-label</code> is a backup, not the first choice.</li>
-              <li><strong>Error messages must be specific:</strong> "Invalid input" tells the user nothing. "Email address must include an @ symbol" tells them exactly what to fix.</li>
-              <li><strong>Required fields:</strong> Mark them with <code>required</code> or <code>aria-required="true"</code>. If you use an asterisk (*), explain it at the top of the form.</li>
-              <li><strong>Group related inputs:</strong> Use <code>&lt;fieldset&gt;</code> and <code>&lt;legend&gt;</code> to group related radio buttons or checkboxes. Screen readers announce the legend before each option.</li>
+              <li><strong>Every input needs a label:</strong> Placeholder text is not a label. Once a user starts typing, the placeholder disappears and there's no way to check what the field was asking for.</li>
+              <li><strong>Associate labels programmatically:</strong> Use <code>&lt;label for="inputId"&gt;</code> or wrap the input inside the label. <code>aria-label</code> is a fallback, not a first choice.</li>
+              <li><strong>Error messages must be specific:</strong> "Invalid input" is useless. "Email must include an @ symbol" tells the user exactly what to fix.</li>
+              <li><strong>Required fields:</strong> Mark them with <code>required</code> or <code>aria-required="true"</code>. Explain what asterisks mean at the top of the form.</li>
+              <li><strong>Group related inputs:</strong> Use <code>&lt;fieldset&gt;</code> and <code>&lt;legend&gt;</code> for radio buttons and checkboxes. Screen readers announce the legend before each option.</li>
             </ul>
             <div class="warn-box">
               <div class="warn-label">Common failure</div>
-              <p>Auto-focusing on a field when the page loads can disorient screen reader users who haven't had a chance to understand the page context yet. Avoid it unless the primary purpose of the page is that specific form.</p>
+              <p>Auto-focusing a field on page load can disorient screen reader users who haven't had a chance to understand where they are yet. Avoid it unless the whole point of the page is that specific form.</p>
             </div>
           </div>
         </div>
@@ -1057,19 +1041,13 @@
     <section id="tools" class="section-wrap" aria-labelledby="tools-heading">
       <div class="section-label" aria-hidden="true">02 — Tools</div>
       <h2 class="section-title" id="tools-heading">Check your own work</h2>
-      <p class="section-intro">
-        Use these to test color choices before you build. Both run entirely in the browser — nothing is sent anywhere.
-      </p>
+      <p class="section-intro">Two quick tools for testing color choices before you build. Everything runs in the browser — nothing is sent anywhere.</p>
 
       <div class="tools-grid">
 
-        <!-- CONTRAST CHECKER -->
         <div class="tool-card fade-in" aria-labelledby="contrast-tool-title">
           <h3 class="tool-title" id="contrast-tool-title">Contrast Ratio Checker</h3>
-          <p class="tool-desc">
-            Enter a text color and background color to see if they meet WCAG AA or AAA requirements.
-            The ratio updates live as you change values.
-          </p>
+          <p class="tool-desc">Enter a text color and background color to see if they meet WCAG AA or AAA. Updates live as you type.</p>
 
           <div class="color-inputs">
             <div class="color-input-wrap">
@@ -1098,16 +1076,12 @@
             <div class="ratio-label">contrast ratio</div>
           </div>
 
-          <div class="badge-row" id="badge-row" aria-live="polite" aria-label="WCAG compliance results">
-          </div>
+          <div class="badge-row" id="badge-row" aria-live="polite" aria-label="WCAG compliance results"></div>
         </div>
 
-        <!-- PALETTE GENERATOR -->
         <div class="tool-card fade-in" aria-labelledby="palette-tool-title">
           <h3 class="tool-title" id="palette-tool-title">Accessible Palette Generator</h3>
-          <p class="tool-desc">
-            Pick a base color and generate a set of tints and shades. Each one is checked against white and black to show which combinations pass WCAG AA.
-          </p>
+          <p class="tool-desc">Pick a base color and generate tints and shades. Each one is checked against white and black to show which combinations pass WCAG AA.</p>
 
           <div class="palette-input-row">
             <div class="palette-input-wrap">
@@ -1128,20 +1102,142 @@
       </div>
     </section>
 
+    <!-- COLORBLIND SIMULATOR -->
+    <section id="simulator" class="section-wrap" aria-labelledby="sim-heading">
+      <div class="section-label" aria-hidden="true">03 — Simulator</div>
+      <h2 class="section-title" id="sim-heading">See through different eyes</h2>
+      <p class="section-intro">
+        About 8% of men and 0.5% of women have some form of color vision deficiency. This simulator applies real color transformation matrices to any image — upload your own UI screenshot and see how it looks across different types of colorblindness.
+      </p>
+
+      <div class="tool-card fade-in" aria-labelledby="sim-heading">
+        <div class="sim-upload">
+          <button class="upload-btn" onclick="document.getElementById('file-input').click()" aria-label="Upload an image to simulate colorblindness">
+            Upload an image
+          </button>
+          <input type="file" id="file-input" accept="image/*" aria-label="File input for colorblind simulation" onchange="loadImage(event)" />
+          <button class="upload-btn" onclick="loadDemo()" aria-label="Load demo image">Use demo image</button>
+          <span class="sim-hint" id="sim-hint">Upload a UI screenshot or use the demo.</span>
+        </div>
+
+        <div class="sim-controls" role="group" aria-label="Colorblindness type selector">
+          <button class="sim-btn active" onclick="setFilter('normal', this)" aria-pressed="true">Normal vision</button>
+          <button class="sim-btn" onclick="setFilter('deuteranopia', this)" aria-pressed="false">Deuteranopia</button>
+          <button class="sim-btn" onclick="setFilter('protanopia', this)" aria-pressed="false">Protanopia</button>
+          <button class="sim-btn" onclick="setFilter('tritanopia', this)" aria-pressed="false">Tritanopia</button>
+          <button class="sim-btn" onclick="setFilter('achromatopsia', this)" aria-pressed="false">Achromatopsia</button>
+        </div>
+
+        <div class="sim-canvas-wrap" role="img" aria-label="Colorblind simulation preview" aria-live="polite" aria-atomic="true">
+          <canvas id="sim-canvas" width="800" height="400"></canvas>
+          <div class="sim-label" id="sim-label" aria-hidden="true">Normal vision</div>
+        </div>
+
+        <div class="tip-box" style="margin-top:16px;">
+          <div class="tip-label">What you're seeing</div>
+          <p><strong>Deuteranopia</strong> — green receptors absent (most common). <strong>Protanopia</strong> — red receptors absent. <strong>Tritanopia</strong> — blue receptors absent. <strong>Achromatopsia</strong> — no color perception at all. The matrices used here match published colorblindness research.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BREAK-IT SANDBOX -->
+    <section id="sandbox" class="section-wrap" aria-labelledby="sandbox-heading">
+      <div class="section-label" aria-hidden="true">04 — Interactive</div>
+      <h2 class="section-title" id="sandbox-heading">Break it on purpose</h2>
+      <p class="section-intro">
+        Toggle accessibility problems on and off to see exactly what each failure looks and feels like. The score updates as you add issues — it's a useful way to internalize why each rule matters.
+      </p>
+
+      <div class="sandbox-layout" aria-label="Accessibility sandbox">
+
+        <div class="sandbox-controls" role="group" aria-labelledby="sandbox-controls-label">
+          <h3 id="sandbox-controls-label">Break something</h3>
+          <div class="toggle-list">
+
+            <label class="toggle-item">
+              <input type="checkbox" id="toggle-contrast" onchange="updateSandbox()" aria-describedby="toggle-contrast-desc" />
+              <div>
+                <div class="toggle-item-label">Low contrast text</div>
+                <div class="toggle-item-sub" id="toggle-contrast-desc">Text becomes nearly unreadable</div>
+              </div>
+            </label>
+
+            <label class="toggle-item">
+              <input type="checkbox" id="toggle-focus" onchange="updateSandbox()" aria-describedby="toggle-focus-desc" />
+              <div>
+                <div class="toggle-item-label">Remove focus outlines</div>
+                <div class="toggle-item-sub" id="toggle-focus-desc">Keyboard users can't see where they are</div>
+              </div>
+            </label>
+
+            <label class="toggle-item">
+              <input type="checkbox" id="toggle-structure" onchange="updateSandbox()" aria-describedby="toggle-structure-desc" />
+              <div>
+                <div class="toggle-item-label">Broken heading order</div>
+                <div class="toggle-item-sub" id="toggle-structure-desc">Style-based headings, not structure</div>
+              </div>
+            </label>
+
+
+            <label class="toggle-item">
+              <input type="checkbox" id="toggle-alt" onchange="updateSandbox()" aria-describedby="toggle-alt-desc" />
+              <div>
+                <div class="toggle-item-label">Missing alt text</div>
+                <div class="toggle-item-sub" id="toggle-alt-desc">Shows raw filename instead</div>
+              </div>
+            </label>
+
+          </div>
+          <button class="sandbox-reset" onclick="resetSandbox()" aria-label="Reset all accessibility issues in the sandbox">Reset all</button>
+        </div>
+
+        <div>
+          <div class="score-wrap" aria-live="polite" aria-atomic="true">
+            <div id="score-badge" class="score-badge score-good">0 issues active</div>
+            <span style="font-size:13px; color:var(--text-soft);">Try toggling something</span>
+          </div>
+
+          <div class="sandbox-preview" role="region" aria-label="Live preview of accessibility issues">
+            <div class="sandbox-preview-inner" id="sandbox-inner">
+
+              <h2 class="sb-heading">What good accessibility looks like</h2>
+              <p class="sb-text">This preview demonstrates common accessibility patterns. Use the toggles on the left to deliberately break each one and see the effect in real time.</p>
+
+              <div style="margin-bottom:16px;">
+                <div class="sb-h2">Core principles</div>
+                <div class="sb-h3">Why it matters</div>
+                <p class="sb-text" style="margin-bottom:0;">Over a billion people live with some form of disability. Accessible design isn't a nice-to-have — it's the baseline.</p>
+              </div>
+
+              <div class="sb-img-wrap">
+                <div class="sb-img" role="img" aria-label="Illustration of a bar chart showing accessibility audit results by category">📊</div>
+              </div>
+
+              <button class="sb-btn" type="button">Primary action</button>
+              <button class="sb-btn" type="button" style="background:var(--surface2);color:var(--text-mid);">Secondary action</button>
+
+            </div>
+            <div class="sandbox-status" aria-live="polite" id="sandbox-status">
+              No issues active — this preview is fully accessible.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- RESOURCES -->
     <section id="resources" class="section-wrap" aria-labelledby="resources-heading">
-      <div class="section-label" aria-hidden="true">03 — Resources</div>
+      <div class="section-label" aria-hidden="true">05 — Resources</div>
       <h2 class="section-title" id="resources-heading">Further reading</h2>
-      <p class="section-intro">
-        These are the most useful resources for going deeper on accessibility.
-      </p>
+      <p class="section-intro">The most useful places to go deeper.</p>
       <ul class="rule-list" aria-label="Accessibility resources" style="max-width:560px;">
-        <li><a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank" rel="noopener">WCAG 2.1 Quick Reference</a> — the official guidelines with techniques and failures</li>
+        <li><a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank" rel="noopener">WCAG 2.1 Quick Reference</a> — official guidelines with techniques and failures</li>
         <li><a href="https://webaim.org/resources/contrastchecker/" target="_blank" rel="noopener">WebAIM Contrast Checker</a> — industry standard contrast tool</li>
         <li><a href="https://wave.webaim.org/" target="_blank" rel="noopener">WAVE Browser Extension</a> — overlay your page with accessibility annotations</li>
         <li><a href="https://www.deque.com/axe/" target="_blank" rel="noopener">axe DevTools</a> — the most widely used automated accessibility testing engine</li>
         <li><a href="https://www.nvaccess.org/download/" target="_blank" rel="noopener">NVDA Screen Reader</a> — free Windows screen reader for manual testing</li>
-        <li><a href="https://webaim.org/projects/million/" target="_blank" rel="noopener">WebAIM Million</a> — annual study of the top 1,000,000 websites' accessibility failures</li>
+        <li><a href="https://webaim.org/projects/million/" target="_blank" rel="noopener">WebAIM Million</a> — annual study of the top million websites' accessibility failures</li>
       </ul>
     </section>
 
@@ -1179,7 +1275,6 @@
     // =====================
     // CONTRAST TOOL
     // =====================
-
     function hexToRgb(hex) {
       hex = hex.replace('#', '');
       if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
@@ -1192,105 +1287,83 @@
     }
 
     function luminance(r, g, b) {
-      const ch = [r, g, b].map(c => {
+      return [r,g,b].map(c => {
         c /= 255;
         return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-      });
-      return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+      }).reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
     }
 
     function contrastRatio(hex1, hex2) {
-      const c1 = hexToRgb(hex1);
-      const c2 = hexToRgb(hex2);
+      const c1 = hexToRgb(hex1), c2 = hexToRgb(hex2);
       if (!c1 || !c2) return null;
-      const l1 = luminance(...c1);
-      const l2 = luminance(...c2);
-      const light = Math.max(l1, l2);
-      const dark  = Math.min(l1, l2);
-      return (light + 0.05) / (dark + 0.05);
+      const l1 = luminance(...c1), l2 = luminance(...c2);
+      return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
     }
 
     function updateContrast() {
       const fg = document.getElementById('fg-color').value;
       const bg = document.getElementById('bg-color').value;
       const ratio = contrastRatio(fg, bg);
-
-      const preview = document.getElementById('contrast-preview');
       const ratioNum = document.getElementById('ratio-num');
       const badgeRow = document.getElementById('badge-row');
+      const preview = document.getElementById('contrast-preview');
 
-      if (!ratio) {
-        ratioNum.textContent = '—';
-        badgeRow.innerHTML = '';
-        return;
-      }
+      if (!ratio) { ratioNum.textContent = '—'; badgeRow.innerHTML = ''; return; }
 
       preview.style.background = bg;
       preview.style.color = fg;
       ratioNum.textContent = ratio.toFixed(2) + ':1';
 
-      const aaLarge  = ratio >= 3;
-      const aaNormal = ratio >= 4.5;
-      const aaaLarge  = ratio >= 4.5;
-      const aaaNormal = ratio >= 7;
-
       badgeRow.innerHTML = `
-        <span class="badge ${aaNormal ? 'pass' : 'fail'}" role="status">AA Normal: ${aaNormal ? 'Pass' : 'Fail'}</span>
-        <span class="badge ${aaLarge  ? 'pass' : 'fail'}" role="status">AA Large: ${aaLarge  ? 'Pass' : 'Fail'}</span>
-        <span class="badge ${aaaNormal ? 'pass' : 'fail'}" role="status">AAA Normal: ${aaaNormal ? 'Pass' : 'Fail'}</span>
-        <span class="badge ${aaaLarge  ? 'pass' : 'fail'}" role="status">AAA Large: ${aaaLarge  ? 'Pass' : 'Fail'}</span>
+        <span class="badge ${ratio >= 4.5 ? 'pass' : 'fail'}" role="status">AA Normal: ${ratio >= 4.5 ? 'Pass' : 'Fail'}</span>
+        <span class="badge ${ratio >= 3   ? 'pass' : 'fail'}" role="status">AA Large: ${ratio >= 3   ? 'Pass' : 'Fail'}</span>
+        <span class="badge ${ratio >= 7   ? 'pass' : 'fail'}" role="status">AAA Normal: ${ratio >= 7   ? 'Pass' : 'Fail'}</span>
+        <span class="badge ${ratio >= 4.5 ? 'pass' : 'fail'}" role="status">AAA Large: ${ratio >= 4.5 ? 'Pass' : 'Fail'}</span>
       `;
     }
 
     function syncColor(type) {
-      const picker = document.getElementById(`${type}-color-picker`);
-      const text   = document.getElementById(`${type}-color`);
-      text.value = picker.value;
+      document.getElementById(`${type}-color`).value = document.getElementById(`${type}-color-picker`).value;
       updateContrast();
     }
 
     function syncPicker(type) {
-      const text   = document.getElementById(`${type}-color`);
-      const picker = document.getElementById(`${type}-color-picker`);
-      const val = text.value.startsWith('#') ? text.value : '#' + text.value;
-      if (/^#[0-9a-fA-F]{6}$/.test(val)) {
-        picker.value = val;
+      const val = document.getElementById(`${type}-color`).value;
+      const full = val.startsWith('#') ? val : '#' + val;
+      if (/^#[0-9a-fA-F]{6}$/.test(full)) {
+        document.getElementById(`${type}-color-picker`).value = full;
         updateContrast();
       }
     }
 
-    // Initialize contrast tool
     updateContrast();
 
     // =====================
     // PALETTE GENERATOR
     // =====================
-
     function syncBaseColor() {
-      const picker = document.getElementById('base-color-picker');
-      document.getElementById('base-color').value = picker.value;
+      document.getElementById('base-color').value = document.getElementById('base-color-picker').value;
     }
 
     function syncBasePicker() {
-      const text = document.getElementById('base-color').value;
-      const picker = document.getElementById('base-color-picker');
-      if (/^#[0-9a-fA-F]{6}$/.test(text)) picker.value = text;
+      const val = document.getElementById('base-color').value;
+      if (/^#[0-9a-fA-F]{6}$/.test(val)) document.getElementById('base-color-picker').value = val;
     }
 
     function hexToHsl(hex) {
       const rgb = hexToRgb(hex);
       if (!rgb) return null;
       let [r, g, b] = rgb.map(v => v / 255);
-      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      const max = Math.max(r,g,b), min = Math.min(r,g,b);
       let h, s, l = (max + min) / 2;
       if (max === min) { h = s = 0; }
       else {
         const d = max - min;
         s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
         switch(max) {
-          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-          case g: h = ((b - r) / d + 2) / 6; break;
-          case b: h = ((r - g) / d + 4) / 6; break;
+          case r: h = ((g-b)/d + (g<b?6:0)) / 6; break;
+          case g: h = ((b-r)/d + 2) / 6; break;
+          case b: h = ((r-g)/d + 4) / 6; break;
         }
       }
       return [h * 360, s * 100, l * 100];
@@ -1301,19 +1374,16 @@
       let r, g, b;
       if (s === 0) { r = g = b = l; }
       else {
-        const hue2rgb = (p, q, t) => {
-          if (t < 0) t += 1;
-          if (t > 1) t -= 1;
-          if (t < 1/6) return p + (q-p)*6*t;
-          if (t < 1/2) return q;
-          if (t < 2/3) return p + (q-p)*(2/3-t)*6;
-          return p;
-        };
         const q = l < 0.5 ? l*(1+s) : l+s-l*s;
         const p = 2*l - q;
-        r = hue2rgb(p, q, h + 1/3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1/3);
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1; if (t > 1) t -= 1;
+          if (t < 1/6) return p+(q-p)*6*t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p+(q-p)*(2/3-t)*6;
+          return p;
+        };
+        r = hue2rgb(p,q,h+1/3); g = hue2rgb(p,q,h); b = hue2rgb(p,q,h-1/3);
       }
       return '#' + [r,g,b].map(v => Math.round(v*255).toString(16).padStart(2,'0')).join('');
     }
@@ -1322,44 +1392,235 @@
       const baseHex = document.getElementById('base-color').value;
       const hsl = hexToHsl(baseHex);
       if (!hsl) { alert('Please enter a valid hex color.'); return; }
-
-      const [h, s, l] = hsl;
-      const lightnessSteps = [95, 88, 78, 65, 52, 40, 30, 20, 12];
-      const names = ['50', '100', '200', '300', '400', '500', '600', '700', '800'];
-
-      const swatches = lightnessSteps.map((lightness, i) => {
-        const hex = hslToHex(h, Math.min(s, 90), lightness);
-        const vsWhite = contrastRatio(hex, '#ffffff');
-        const vsBlack = contrastRatio(hex, '#000000');
-        return { hex, name: names[i], vsWhite, vsBlack };
-      });
-
+      const [h, s] = hsl;
+      const steps = [95,88,78,65,52,40,30,20,12];
+      const names = ['50','100','200','300','400','500','600','700','800'];
       const grid = document.getElementById('palette-grid');
-      grid.innerHTML = swatches.map(s => {
-        const wPass = s.vsWhite >= 4.5;
-        const bPass = s.vsBlack >= 4.5;
+      grid.innerHTML = steps.map((l, i) => {
+        const hex = hslToHex(h, Math.min(s, 90), l);
+        const vW = contrastRatio(hex, '#ffffff');
+        const vB = contrastRatio(hex, '#000000');
         return `
           <div class="palette-swatch" role="listitem">
-            <div class="swatch-color" style="background:${s.hex};" aria-hidden="true"></div>
+            <div class="swatch-color" style="background:${hex};" aria-hidden="true"></div>
             <div class="swatch-info">
-              <div class="swatch-hex">${s.hex}</div>
-              <div class="swatch-name">Shade ${s.name}</div>
+              <div class="swatch-hex">${hex}</div>
+              <div class="swatch-name">Shade ${names[i]}</div>
             </div>
-            <div class="swatch-badges" aria-label="Contrast results for ${s.hex}">
-              <span class="badge ${wPass ? 'pass' : 'fail'}" title="Contrast on white: ${s.vsWhite.toFixed(1)}:1">on white: ${wPass ? '✓ AA' : '✕ fail'}</span>
-              <span class="badge ${bPass ? 'pass' : 'fail'}" title="Contrast on black: ${s.vsBlack.toFixed(1)}:1">on black: ${bPass ? '✓ AA' : '✕ fail'}</span>
+            <div class="swatch-badges" aria-label="Contrast results for ${hex}">
+              <span class="badge ${vW>=4.5?'pass':'fail'}" title="on white: ${vW.toFixed(1)}:1">on white: ${vW>=4.5?'✓ AA':'✕ fail'}</span>
+              <span class="badge ${vB>=4.5?'pass':'fail'}" title="on black: ${vB.toFixed(1)}:1">on black: ${vB>=4.5?'✓ AA':'✕ fail'}</span>
             </div>
-            <button class="swatch-copy" onclick="copyHex('${s.hex}', this)" aria-label="Copy ${s.hex} to clipboard">Copy</button>
+            <button class="swatch-copy" onclick="copyHex('${hex}', this)" aria-label="Copy ${hex} to clipboard">Copy</button>
           </div>`;
       }).join('');
     }
 
     function copyHex(hex, btn) {
       navigator.clipboard.writeText(hex).then(() => {
-        const original = btn.textContent;
         btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = original; }, 1500);
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
       });
+    }
+
+    // =====================
+    // COLORBLIND SIMULATOR
+    // =====================
+
+    // Dalton/Lindbloom colorblindness matrices
+    const CB_MATRICES = {
+      normal:        [1,0,0, 0,1,0, 0,0,1],
+      deuteranopia:  [0.367,0.861,-0.228, 0.280,0.673,0.047, -0.012,0.043,0.969],
+      protanopia:    [0.152,1.053,-0.205, 0.115,0.786,0.099, -0.004,-0.048,1.052],
+      tritanopia:    [1.256,-0.077,-0.179, -0.078,0.931,0.148, 0.005,0.691,0.304],
+      achromatopsia: [0.299,0.587,0.114, 0.299,0.587,0.114, 0.299,0.587,0.114]
+    };
+
+    const CB_NAMES = {
+      normal: 'Normal vision',
+      deuteranopia: 'Deuteranopia (red-green)',
+      protanopia: 'Protanopia (red-green)',
+      tritanopia: 'Tritanopia (blue-yellow)',
+      achromatopsia: 'Achromatopsia (no color)'
+    };
+
+    let currentFilter = 'normal';
+    let sourceImageData = null;
+    const canvas = document.getElementById('sim-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function drawPlaceholder() {
+      canvas.width = 800;
+      canvas.height = 200;
+      ctx.fillStyle = '#f0ede8';
+      ctx.fillRect(0, 0, 800, 200);
+      ctx.fillStyle = '#a8a29e';
+      ctx.font = '16px DM Sans, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Upload an image or use the demo to see the simulation', 400, 108);
+    }
+
+    drawPlaceholder();
+
+    function applyFilter(filter) {
+      if (!sourceImageData) return;
+      const m = CB_MATRICES[filter];
+      canvas.width = sourceImageData.width;
+      canvas.height = sourceImageData.height;
+      const out = ctx.createImageData(sourceImageData.width, sourceImageData.height);
+      const src = sourceImageData.data;
+      const dst = out.data;
+      for (let i = 0; i < src.length; i += 4) {
+        const r = src[i], g = src[i+1], b = src[i+2];
+        dst[i]   = Math.min(255, Math.max(0, m[0]*r + m[1]*g + m[2]*b));
+        dst[i+1] = Math.min(255, Math.max(0, m[3]*r + m[4]*g + m[5]*b));
+        dst[i+2] = Math.min(255, Math.max(0, m[6]*r + m[7]*g + m[8]*b));
+        dst[i+3] = src[i+3];
+      }
+      ctx.putImageData(out, 0, 0);
+      document.getElementById('sim-label').textContent = CB_NAMES[filter];
+    }
+
+    function loadImageFromSrc(src) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const maxW = 800;
+        const scale = Math.min(1, maxW / img.width);
+        canvas.width  = Math.round(img.width  * scale);
+        canvas.height = Math.round(img.height * scale);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        sourceImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        applyFilter(currentFilter);
+        document.getElementById('sim-hint').textContent = 'Toggle vision types above.';
+      };
+      img.src = src;
+    }
+
+    function loadImage(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => loadImageFromSrc(ev.target.result);
+      reader.readAsDataURL(file);
+    }
+
+    function loadDemo() {
+      // Draw a demo UI with colored elements directly on canvas
+      canvas.width = 800; canvas.height = 340;
+      const g = ctx;
+
+      // background
+      g.fillStyle = '#ffffff'; g.fillRect(0,0,800,340);
+
+      // header bar
+      g.fillStyle = '#3b6fa0'; g.fillRect(0,0,800,56);
+      g.fillStyle = '#ffffff'; g.font = 'bold 18px serif'; g.fillText('Dashboard', 24, 36);
+      // nav items
+      ['Overview','Reports','Settings'].forEach((t,i) => {
+        g.fillStyle = 'rgba(255,255,255,0.7)';
+        g.font = '14px sans-serif';
+        g.fillText(t, 200 + i*100, 36);
+      });
+
+      // stat cards
+      const cards = [
+        { x:24,  color:'#4a7c59', label:'Revenue',  val:'$48,200', sub:'+12%' },
+        { x:212, color:'#b45844', label:'Errors',    val:'142',     sub:'-3%'  },
+        { x:400, color:'#92600a', label:'Users',     val:'9,340',   sub:'+8%'  },
+        { x:588, color:'#3b6fa0', label:'Uptime',    val:'99.9%',   sub:'30d'  },
+      ];
+      cards.forEach(c => {
+        g.fillStyle = '#f7f4f0'; g.beginPath(); g.roundRect(c.x, 72, 172, 80, 8); g.fill();
+        g.fillStyle = c.color; g.fillRect(c.x, 72, 4, 80);
+        g.fillStyle = '#57534e'; g.font = '12px sans-serif'; g.fillText(c.label, c.x+16, 98);
+        g.fillStyle = '#1c1917'; g.font = 'bold 22px serif'; g.fillText(c.val, c.x+16, 125);
+        g.fillStyle = c.color; g.font = '12px sans-serif'; g.fillText(c.sub, c.x+16, 144);
+      });
+
+      // bar chart
+      g.fillStyle = '#f7f4f0'; g.beginPath(); g.roundRect(24, 168, 460, 148, 8); g.fill();
+      g.fillStyle = '#1c1917'; g.font = '13px sans-serif'; g.fillText('Monthly traffic', 40, 192);
+      const bars = [60,90,70,110,85,130,100,140,120,160,115,145];
+      bars.forEach((h,i) => {
+        const colors = ['#3b6fa0','#4a7c59','#b45844','#92600a'];
+        g.fillStyle = colors[i%4];
+        g.fillRect(44+i*34, 300-h, 22, h);
+      });
+
+      // legend
+      [['#3b6fa0','Direct'],['#4a7c59','Organic'],['#b45844','Paid'],['#92600a','Referral']].forEach(([c,t],i) => {
+        g.fillStyle = c; g.fillRect(44+i*100, 318, 12, 12);
+        g.fillStyle = '#57534e'; g.font = '11px sans-serif'; g.fillText(t, 60+i*100, 328);
+      });
+
+      // status list
+      g.fillStyle = '#f7f4f0'; g.beginPath(); g.roundRect(500, 168, 276, 148, 8); g.fill();
+      g.fillStyle = '#1c1917'; g.font = '13px sans-serif'; g.fillText('Status', 516, 192);
+      [
+        ['#4a7c59','API healthy'],
+        ['#4a7c59','Database OK'],
+        ['#b45844','CDN degraded'],
+        ['#92600a','High load warn'],
+        ['#4a7c59','Auth service OK'],
+      ].forEach(([c,t],i) => {
+        g.beginPath(); g.arc(520, 214+i*22, 5, 0, Math.PI*2);
+        g.fillStyle = c; g.fill();
+        g.fillStyle = '#57534e'; g.font = '13px sans-serif'; g.fillText(t, 534, 219+i*22);
+      });
+
+      sourceImageData = g.getImageData(0, 0, 800, 340);
+      applyFilter(currentFilter);
+      document.getElementById('sim-hint').textContent = 'Toggle vision types to simulate different colorblindness.';
+    }
+
+    function setFilter(type, btn) {
+      currentFilter = type;
+      document.querySelectorAll('.sim-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+      applyFilter(type);
+    }
+
+    // =====================
+    // BREAK-IT SANDBOX
+    // =====================
+    const ISSUES = {
+      'toggle-contrast':  { class: 'bad-contrast',  label: 'Low contrast text' },
+      'toggle-focus':     { class: 'no-focus',       label: 'No focus outlines' },
+      'toggle-structure': { class: 'bad-structure',  label: 'Broken heading order' },
+
+      'toggle-alt':       { class: 'no-alt-text',    label: 'Missing alt text' },
+    };
+
+    function updateSandbox() {
+      const inner = document.getElementById('sandbox-inner');
+      const active = [];
+
+      Object.entries(ISSUES).forEach(([id, cfg]) => {
+        const checked = document.getElementById(id).checked;
+        inner.classList.toggle(cfg.class, checked);
+        if (checked) active.push(cfg.label);
+      });
+
+      const count = active.length;
+      const badge = document.getElementById('score-badge');
+      const status = document.getElementById('sandbox-status');
+
+      badge.textContent = count === 0 ? '0 issues active' : `${count} issue${count>1?'s':''} active`;
+      badge.className = 'score-badge ' + (count === 0 ? 'score-good' : count < 3 ? 'score-warn' : 'score-bad');
+
+      status.innerHTML = count === 0
+        ? 'No issues active — this preview is fully accessible.'
+        : `Active: <span>${active.join(', ')}</span>`;
+    }
+
+    function resetSandbox() {
+      Object.keys(ISSUES).forEach(id => { document.getElementById(id).checked = false; });
+      updateSandbox();
     }
   </script>
 
