@@ -10,24 +10,45 @@
     <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
     <title>Zerin Toma — Portfolio</title>
     <style>
-        /* ===== ROOT VARIABLES - REFRESHED ACCENT PALETTE ===== */
+        /* ===== ROOT VARIABLES ===== */
         :root {
             --bg: #f5f3f0;
             --bg2: #edeae5;
             --surface: #fefcf9;
             --surface2: #f8f6f2;
-            /* WCAG AA compliant text colors on light bg */
             --ink: #1c1c1c;
             --ink-mid: #3b3b3b;
             --ink-soft: #5c5c5c;
             --ink-dim: #78716c;
-            /* NEW ACCENT COLORS - sophisticated & harmonious */
-            --violet: #7C3AED;      /* electric violet - primary accent */
-            --teal: #0F766E;        /* deep teal - secondary accent */
-            --amber: #D97706;       /* warm amber - tertiary accent */
-            --rose: #E11D48;        /* soft rose - micro accents */
+            --violet: #7C3AED;
+            --teal: #0F766E;
+            --amber: #D97706;
+            --rose: #E11D48;
             --border: rgba(28, 28, 28, 0.1);
             --border-mid: rgba(28, 28, 28, 0.18);
+            --grid-line: rgba(124,58,237,0.04);
+            --star-opacity: 0;
+            --transition-speed: 0.6s;
+        }
+
+        /* ===== DARK MODE VARIABLES ===== */
+        body.dark-mode {
+            --bg: #0a0f1e;
+            --bg2: #0d1425;
+            --surface: #111827;
+            --surface2: #0f1520;
+            --ink: #e8eaf0;
+            --ink-mid: #c5c9d6;
+            --ink-soft: #8892a4;
+            --ink-dim: #5a6478;
+            --violet: #9d6fff;
+            --teal: #2dd4bf;
+            --amber: #fbbf24;
+            --rose: #fb7185;
+            --border: rgba(200, 210, 255, 0.08);
+            --border-mid: rgba(200, 210, 255, 0.15);
+            --grid-line: rgba(157, 111, 255, 0.06);
+            --star-opacity: 1;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -39,6 +60,7 @@
             color: var(--ink);
             cursor: none;
             overflow-x: hidden;
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
         }
 
         /* ===== CUSTOM CURSOR ===== */
@@ -49,7 +71,7 @@
             position: fixed;
             pointer-events: none;
             z-index: 9999;
-            transition: transform 0.1s;
+            transition: transform 0.1s, background 0.4s;
         }
         #cursor-ring {
             width: 32px; height: 32px;
@@ -58,7 +80,7 @@
             position: fixed;
             pointer-events: none;
             z-index: 9998;
-            transition: all 0.18s ease;
+            transition: all 0.18s ease, border-color 0.4s;
             opacity: 0.5;
         }
 
@@ -85,6 +107,60 @@
 
         a { text-decoration: none; color: inherit; }
 
+        /* ===== MOON BUTTON ===== */
+        #moon-btn {
+            position: fixed;
+            top: 15px;
+            right: 16px;
+            z-index: 600;
+            width: 40px;
+            height: 40px;
+            border: 1.5px solid var(--border-mid);
+            border-radius: 50%;
+            background: var(--surface);
+            cursor: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.3s, background 0.4s, transform 0.4s;
+            overflow: hidden;
+        }
+
+        #moon-btn:hover {
+            border-color: var(--violet);
+            transform: scale(1.1);
+        }
+
+        .moon-icon, .sun-icon {
+            position: absolute;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        /* Light mode: show moon, hide sun */
+        body:not(.dark-mode) .moon-icon { opacity: 1; transform: rotate(0deg); }
+        body:not(.dark-mode) .sun-icon  { opacity: 0; transform: rotate(90deg) scale(0.6); }
+
+        /* Dark mode: show sun, hide moon */
+        body.dark-mode .moon-icon { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+        body.dark-mode .sun-icon  { opacity: 1; transform: rotate(0deg); }
+
+        /* ===== PENCIL-STAR CANVAS (DARK MODE ONLY) ===== */
+        #star-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+        }
+
+        body.dark-mode #star-canvas {
+            opacity: 1;
+        }
+
         /* ===== NAVBAR ===== */
         nav {
             position: fixed;
@@ -98,6 +174,11 @@
             background: rgba(245, 243, 240, 0.92);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
+            transition: background 0.6s ease, border-color 0.6s ease;
+        }
+
+        body.dark-mode nav {
+            background: rgba(10, 15, 30, 0.92);
         }
 
         nav .left a {
@@ -106,12 +187,15 @@
             font-weight: 700;
             color: var(--ink);
             letter-spacing: 3px;
+            transition: color 0.4s;
         }
 
         nav .right {
             display: flex;
             gap: 8px;
             align-items: center;
+            /* leave room for moon button */
+            padding-right: 56px;
         }
 
         nav .right a {
@@ -156,9 +240,10 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background-image:
-                linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
             background-size: 60px 60px;
+            transition: background-image 0.6s ease;
         }
 
         #hero::after {
@@ -169,6 +254,11 @@
             width: 700px; height: 500px;
             background: radial-gradient(ellipse, rgba(124,58,237,0.04) 0%, transparent 70%);
             pointer-events: none;
+            transition: background 0.6s;
+        }
+
+        body.dark-mode #hero::after {
+            background: radial-gradient(ellipse, rgba(157,111,255,0.07) 0%, transparent 70%);
         }
 
         .hero-inner {
@@ -192,6 +282,7 @@
             display: inline-block;
             animation: fadeInBlur 1.5s ease forwards;
             opacity: 0;
+            transition: color 0.4s;
         }
 
         @keyframes fadeInBlur {
@@ -224,6 +315,7 @@
             text-transform: uppercase;
             position: relative;
             animation: fadeUp 1s 1.8s ease both;
+            transition: color 0.4s;
         }
 
         .glitch::before, .glitch::after {
@@ -263,6 +355,7 @@
             margin-bottom: 6px;
             min-height: 24px;
             animation: fadeUp 1s 2.2s ease both;
+            transition: color 0.4s;
         }
 
         .typewriter-line::before { content: '> '; color: var(--violet); }
@@ -285,7 +378,7 @@
             padding: 24px 28px;
             position: relative;
             overflow: hidden;
-            transition: border-color 0.3s, transform 0.3s;
+            transition: border-color 0.3s, transform 0.3s, background 0.4s;
         }
 
         .bio-card::before {
@@ -306,11 +399,12 @@
             color: var(--teal);
             text-transform: uppercase;
             margin-bottom: 12px;
+            transition: color 0.4s;
         }
 
         .bio-card:nth-child(2) .card-label { color: var(--violet); }
 
-        .bio-card p { font-size: 14px; line-height: 1.75; color: var(--ink-mid); }
+        .bio-card p { font-size: 14px; line-height: 1.75; color: var(--ink-mid); transition: color 0.4s; }
 
         .hero-links {
             display: flex;
@@ -368,12 +462,14 @@
             letter-spacing: 3px;
             color: var(--ink-dim);
             text-transform: uppercase;
+            transition: color 0.4s;
         }
 
         .scroll-line {
             width: 1px; height: 50px;
             background: linear-gradient(to bottom, var(--teal), transparent);
             animation: scrollPulse 2s ease-in-out infinite;
+            transition: background 0.4s;
         }
 
         @keyframes scrollPulse {
@@ -404,12 +500,14 @@
             color: var(--violet);
             letter-spacing: 4px;
             text-transform: uppercase;
+            transition: color 0.4s;
         }
 
         .section-line {
             flex: 1;
             height: 1px;
             background: linear-gradient(to right, var(--border-mid), transparent);
+            transition: background 0.4s;
         }
 
         .section-title {
@@ -419,9 +517,10 @@
             color: var(--ink);
             margin-bottom: 16px;
             letter-spacing: 2px;
+            transition: color 0.4s;
         }
 
-        .section-title span { color: var(--teal); }
+        .section-title span { color: var(--teal); transition: color 0.4s; }
 
         .section-desc {
             font-size: 15px;
@@ -430,15 +529,21 @@
             max-width: 600px;
             margin-bottom: 60px;
             font-family: 'Share Tech Mono', monospace;
+            transition: color 0.4s;
         }
 
-        /* ===== SKYLINE - DESKTOP ===== */
+        /* ===== SKYLINE ===== */
         .skyline-container {
             width: 100%;
             position: relative;
             overflow: hidden;
             background: linear-gradient(to bottom, #e8e4de 0%, #f5f3f0 100%);
             padding-bottom: 0;
+            transition: background 0.6s ease;
+        }
+
+        body.dark-mode .skyline-container {
+            background: linear-gradient(to bottom, #0d1630 0%, #0a0f1e 100%);
         }
 
         .skyline-stage {
@@ -456,6 +561,11 @@
             bottom: 0; left: 0; right: 0;
             height: 1px;
             background: rgba(28,28,28,0.12);
+            transition: background 0.4s;
+        }
+
+        body.dark-mode .skyline-stage::after {
+            background: rgba(200,210,255,0.12);
         }
 
         .building {
@@ -472,21 +582,23 @@
         .building.has-antenna::before {
             content: '';
             position: absolute;
-            top: -22px;
-            left: 50%;
+            top: -22px; left: 50%;
             transform: translateX(-50%);
-            width: 2px;
-            height: 22px;
+            width: 2px; height: 22px;
             background: rgba(28,28,28,0.25);
+            transition: background 0.4s;
         }
+
+        body.dark-mode .building.has-antenna::before {
+            background: rgba(200,210,255,0.25);
+        }
+
         .building.has-antenna::after {
             content: '';
             position: absolute;
-            top: -28px;
-            left: 50%;
+            top: -28px; left: 50%;
             transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
+            width: 6px; height: 6px;
             border-radius: 50%;
             background: var(--violet);
             animation: antennaBlink 2s ease-in-out infinite;
@@ -503,9 +615,14 @@
             border: 1px solid rgba(28,28,28,0.15);
             background: linear-gradient(160deg, #dedad4 0%, #ccc8c2 100%);
             position: relative;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s, background 0.6s;
             overflow: visible;
             min-width: 100px;
+        }
+
+        body.dark-mode .building-body {
+            border: 1px solid rgba(200,210,255,0.1);
+            background: linear-gradient(160deg, #1a2035 0%, #131924 100%);
         }
 
         .building:hover .building-body {
@@ -524,8 +641,14 @@
             gap: 8px;
             padding: 14px 8px 12px;
             position: relative;
-            transition: box-shadow 0.3s, border-color 0.3s;
+            transition: box-shadow 0.3s, border-color 0.3s, background 0.6s;
             min-height: 110px;
+        }
+
+        body.dark-mode .billboard {
+            background: #0f1826;
+            border: 1px solid rgba(200,210,255,0.1);
+            border-bottom: 2px solid rgba(200,210,255,0.08);
         }
 
         .billboard::before {
@@ -552,13 +675,9 @@
             display: inline-block;
             line-height: 1;
             flex-shrink: 0;
-            width: 46px;
-            height: 46px;
+            width: 46px; height: 46px;
         }
-        .billboard svg, .billboard .tech-svg {
-            width: 46px;
-            height: 46px;
-        }
+        .billboard svg, .billboard .tech-svg { width: 46px; height: 46px; }
         .building:hover .billboard i,
         .building:hover .billboard svg,
         .building:hover .billboard .tech-svg {
@@ -572,13 +691,11 @@
             letter-spacing: 1.5px;
             color: var(--ink-soft);
             text-transform: uppercase;
-            transition: color 0.3s;
+            transition: color 0.4s;
             white-space: nowrap;
         }
 
-        .building:hover .billboard-name {
-            color: var(--ink);
-        }
+        .building:hover .billboard-name { color: var(--ink); }
 
         .windows-area {
             padding: 10px 8px 8px;
@@ -586,15 +703,10 @@
             gap: 4px;
         }
 
-        .win-row {
-            display: flex;
-            gap: 4px;
-            justify-content: center;
-        }
+        .win-row { display: flex; gap: 4px; justify-content: center; }
 
         .win {
-            width: 14px;
-            height: 10px;
+            width: 14px; height: 10px;
             border-radius: 1px;
             font-family: 'Share Tech Mono', monospace;
             font-size: 7px;
@@ -607,14 +719,9 @@
             flex-shrink: 0;
         }
 
-        .win.lit {
-            animation: winFlicker var(--flicker-dur, 3s) ease-in-out infinite var(--flicker-delay, 0s);
-        }
-
-        .win.dim {
-            background: rgba(28,28,28,0.08) !important;
-            color: transparent;
-        }
+        .win.lit { animation: winFlicker var(--flicker-dur, 3s) ease-in-out infinite var(--flicker-delay, 0s); }
+        .win.dim { background: rgba(28,28,28,0.08) !important; color: transparent; }
+        body.dark-mode .win.dim { background: rgba(200,210,255,0.04) !important; }
 
         @keyframes winFlicker {
             0%, 100% { opacity: 1; }
@@ -626,6 +733,7 @@
             90% { opacity: 1; }
         }
 
+        /* Projects */
         #projects {
             padding: 80px 60px;
             max-width: 1100px;
@@ -638,9 +746,7 @@
             gap: 20px;
         }
 
-        @media (max-width: 768px) {
-            .projects-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 768px) { .projects-grid { grid-template-columns: 1fr; } }
 
         .project-card {
             background: var(--surface);
@@ -648,7 +754,7 @@
             padding: 32px;
             position: relative;
             overflow: hidden;
-            transition: border-color 0.3s, transform 0.3s;
+            transition: border-color 0.3s, transform 0.3s, background 0.4s;
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -674,6 +780,7 @@
             letter-spacing: 3px;
             color: var(--teal);
             text-transform: uppercase;
+            transition: color 0.4s;
         }
 
         .project-card h3 {
@@ -682,6 +789,7 @@
             font-weight: 700;
             color: var(--ink);
             letter-spacing: 1px;
+            transition: color 0.4s;
         }
 
         .project-card p {
@@ -690,13 +798,10 @@
             color: var(--ink-soft);
             line-height: 1.85;
             flex: 1;
+            transition: color 0.4s;
         }
 
-        .project-tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+        .project-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 
         .project-tags span {
             font-family: 'Share Tech Mono', monospace;
@@ -706,6 +811,7 @@
             border: 1px solid var(--border);
             color: var(--ink-dim);
             text-transform: uppercase;
+            transition: border-color 0.4s, color 0.4s;
         }
 
         .project-link {
@@ -723,11 +829,7 @@
             width: fit-content;
         }
 
-        .project-link:hover {
-            background: var(--teal);
-            color: #fff;
-        }
-
+        .project-link:hover { background: var(--teal); color: #fff; }
         .project-link::after { content: ' →'; }
 
         .coming-soon-card {
@@ -742,6 +844,7 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
+            transition: background 0.4s;
         }
 
         .coming-soon-card::before {
@@ -753,10 +856,7 @@
             animation: shimmer 3s infinite;
         }
 
-        @keyframes shimmer {
-            from { left: -60%; }
-            to { left: 150%; }
-        }
+        @keyframes shimmer { from { left: -60%; } to { left: 150%; } }
 
         .coming-soon-card .cs-label {
             font-family: 'Share Tech Mono', monospace;
@@ -764,6 +864,7 @@
             letter-spacing: 5px;
             color: var(--violet);
             text-transform: uppercase;
+            transition: color 0.4s;
         }
 
         .coming-soon-card h3 {
@@ -771,6 +872,7 @@
             font-size: 16px;
             color: var(--ink-soft);
             letter-spacing: 1px;
+            transition: color 0.4s;
         }
 
         .coming-soon-card p {
@@ -778,6 +880,7 @@
             font-size: 13px;
             color: var(--ink-dim);
             line-height: 1.9;
+            transition: color 0.4s;
         }
 
         .blink-dot {
@@ -788,13 +891,12 @@
             margin-right: 6px;
             vertical-align: middle;
             animation: dotPulse 1.5s ease-in-out infinite;
+            transition: background 0.4s;
         }
 
-        @keyframes dotPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
+        @keyframes dotPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
+        /* Contact */
         #contact {
             padding: 120px 60px;
             max-width: 1100px;
@@ -807,6 +909,7 @@
             gap: 2px;
             margin-top: 50px;
             border: 1px solid var(--border);
+            transition: border-color 0.4s;
         }
 
         .contact-item {
@@ -815,7 +918,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            transition: background 0.3s;
+            transition: background 0.3s, border-color 0.4s;
             position: relative;
             overflow: hidden;
             background: var(--surface);
@@ -846,6 +949,7 @@
             letter-spacing: 3px;
             color: var(--ink-dim);
             text-transform: uppercase;
+            transition: color 0.4s;
         }
 
         .contact-item .ci-value {
@@ -864,6 +968,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: var(--bg);
+            transition: background 0.6s, border-color 0.4s;
         }
 
         footer span {
@@ -871,9 +977,10 @@
             font-size: 11px;
             color: var(--ink-dim);
             letter-spacing: 2px;
+            transition: color 0.4s;
         }
 
-        footer span .accent { color: var(--teal); }
+        footer span .accent { color: var(--teal); transition: color 0.4s; }
 
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(24px); }
@@ -898,6 +1005,7 @@
             color: var(--ink-dim);
             margin-bottom: 20px;
             animation: fadeUp 1s 1.4s ease both;
+            transition: color 0.4s;
         }
 
         .status-dot {
@@ -905,6 +1013,7 @@
             background: var(--teal);
             border-radius: 50%;
             animation: dotPulse2 2s ease-in-out infinite;
+            transition: background 0.4s;
         }
 
         @keyframes dotPulse2 {
@@ -916,10 +1025,11 @@
         @media (max-width: 768px) {
             nav { padding: 0 16px; height: 60px; }
             nav .left a { font-size: 15px; letter-spacing: 2px; }
-            nav .right { gap: 2px; }
+            nav .right { gap: 2px; padding-right: 52px; }
             nav .right a { font-size: 10px; padding: 5px 7px; letter-spacing: 0.5px; }
             nav .right a.nav-skills, nav .right a.nav-projects { display: none; }
             nav .right a.contact-btn { font-size: 10px; padding: 5px 10px; }
+            #moon-btn { top: 10px; right: 10px; width: 36px; height: 36px; }
             #hero { padding: 80px 20px 60px; }
             .bio-grid { grid-template-columns: 1fr; }
             #skills .skills-header { padding: 80px 24px 0; }
@@ -930,80 +1040,37 @@
             footer { flex-direction: column; gap: 8px; text-align: center; padding: 20px; }
             .hero-links { gap: 10px; }
             .hero-links a { padding: 10px 18px; font-size: 11px; }
-
-            /* ===== MOBILE SKYLINE ===== */
             .skyline-container {
                 overflow-x: auto;
                 overflow-y: visible;
                 -webkit-overflow-scrolling: touch;
-                /* Hide scrollbar but keep scroll functionality */
                 scrollbar-width: none;
             }
             .skyline-container::-webkit-scrollbar { display: none; }
-
             .skyline-stage {
-                /* Fixed width so all 5 buildings fit, with horizontal scroll */
                 min-width: 500px;
                 width: 500px;
                 gap: 8px;
                 padding: 40px 16px 0;
                 justify-content: flex-start;
             }
-
             .building {
-                /* Thinner & fixed width on mobile */
                 flex: none;
                 min-width: 0;
                 max-width: none;
-                width: calc((500px - 32px - 4 * 8px) / 5); /* 5 buildings, container padding, 4 gaps */
+                width: calc((500px - 32px - 4 * 8px) / 5);
             }
-
-            /* Taller on mobile to compensate for narrower width */
-            .building-body {
-                min-width: 0 !important;
-            }
-
-            /* Smaller billboard on mobile */
-            .billboard {
-                min-height: 80px;
-                padding: 10px 4px 8px;
-                gap: 5px;
-            }
-
-            .billboard i, .billboard svg, .billboard .tech-svg {
-                font-size: 28px;
-                width: 28px;
-                height: 28px;
-            }
-
-            .billboard-name {
-                font-size: 8px;
-                letter-spacing: 0.5px;
-            }
-
-            /* Smaller windows on mobile */
-            .windows-area {
-                padding: 6px 4px 4px;
-                gap: 3px;
-            }
-
+            .building-body { min-width: 0 !important; }
+            .billboard { min-height: 80px; padding: 10px 4px 8px; gap: 5px; }
+            .billboard i, .billboard svg, .billboard .tech-svg { font-size: 28px; width: 28px; height: 28px; }
+            .billboard-name { font-size: 8px; letter-spacing: 0.5px; }
+            .windows-area { padding: 6px 4px 4px; gap: 3px; }
             .win-row { gap: 3px; }
-
-            .win {
-                width: 9px;
-                height: 7px;
-                font-size: 5px;
-            }
-
-            /* Scroll hint label for mobile */
-            .skyline-scroll-hint {
-                display: block;
-            }
+            .win { width: 9px; height: 7px; font-size: 5px; }
+            .skyline-scroll-hint { display: block; }
         }
 
-        @media (min-width: 769px) {
-            .skyline-scroll-hint { display: none; }
-        }
+        @media (min-width: 769px) { .skyline-scroll-hint { display: none; } }
 
         .skyline-scroll-hint {
             font-family: 'Share Tech Mono', monospace;
@@ -1017,6 +1084,15 @@
     </style>
 </head>
 <body>
+
+    <!-- PENCIL-STAR CANVAS -->
+    <canvas id="star-canvas"></canvas>
+
+    <!-- MOON / SUN TOGGLE -->
+    <button id="moon-btn" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <span class="moon-icon">☽</span>
+        <span class="sun-icon">☀</span>
+    </button>
 
     <div id="cursor"></div>
     <div id="cursor-ring"></div>
@@ -1064,7 +1140,7 @@
                     </div>
                     <div class="bio-card">
                         <div class="card-label">// Beyond Code</div>
-                        <p>Fashion designer & sewist. Volunteer at Fab Scrap NYC — diverting textile waste into community creativity. Nature photographer capturing hidden beautiful spaces across New York City.</p>
+                        <p>Fashion designer &amp; sewist. Volunteer at Fab Scrap NYC — diverting textile waste into community creativity. Nature photographer capturing hidden beautiful spaces across New York City.</p>
                     </div>
                 </div>
                 <div class="hero-links">
@@ -1142,24 +1218,50 @@
     </footer>
 
     <script>
+        /* ===== CURSOR ===== */
         const cursor = document.getElementById('cursor');
         const ring = document.getElementById('cursor-ring');
         let mx = 0, my = 0, rx = 0, ry = 0;
         document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-        function animCursor() { cursor.style.left = mx - 5 + 'px'; cursor.style.top = my - 5 + 'px'; rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12; ring.style.left = rx - 16 + 'px'; ring.style.top = ry - 16 + 'px'; requestAnimationFrame(animCursor); }
+        function animCursor() {
+            cursor.style.left = mx - 5 + 'px';
+            cursor.style.top = my - 5 + 'px';
+            rx += (mx - rx) * 0.12;
+            ry += (my - ry) * 0.12;
+            ring.style.left = rx - 16 + 'px';
+            ring.style.top = ry - 16 + 'px';
+            requestAnimationFrame(animCursor);
+        }
         animCursor();
         document.querySelectorAll('a, button').forEach(el => {
             el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2.5)'; ring.style.transform = 'scale(1.5)'; ring.style.opacity = '0.8'; });
             el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; ring.style.opacity = '0.5'; });
         });
+
+        /* ===== TYPEWRITER ===== */
         const phrases = ['Building at the intersection of code & creativity.', 'Exploring cybersecurity & software development.', 'Photographer. Fashion designer. Engineer.', 'Currently: learning, building, creating.'];
         let pi = 0, ci = 0, deleting = false;
         const elTyped = document.getElementById('typed');
-        function type() { const phrase = phrases[pi]; if (!deleting) { elTyped.textContent = phrase.slice(0, ++ci); if (ci === phrase.length) { deleting = true; setTimeout(type, 1800); return; } } else { elTyped.textContent = phrase.slice(0, --ci); if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; } } setTimeout(type, deleting ? 30 : 55); }
+        function type() {
+            const phrase = phrases[pi];
+            if (!deleting) {
+                elTyped.textContent = phrase.slice(0, ++ci);
+                if (ci === phrase.length) { deleting = true; setTimeout(type, 1800); return; }
+            } else {
+                elTyped.textContent = phrase.slice(0, --ci);
+                if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+            }
+            setTimeout(type, deleting ? 30 : 55);
+        }
         setTimeout(type, 2800);
-        const observer = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.12 });
+
+        /* ===== INTERSECTION OBSERVER ===== */
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.12 });
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+        /* ===== SKYLINE ===== */
         (function() {
             const skillsData = [
                 { name: 'HTML', svgRaw: '<svg viewBox="0 0 128 128"><path fill="#E44D26" d="M19.037 113.876L9.032 1.661h109.936l-10.016 112.198-45.019 12.48z"></path><path fill="#F16529" d="M64 116.8l36.378-10.086 8.559-95.878H64z"></path><path fill="#EBEBEB" d="M64 52.455H45.788L44.53 38.361H64V24.599H29.489l.33 3.692 3.382 37.927H64zm0 35.743l-.061.017-15.327-4.14-.979-10.975H33.816l1.928 21.609 28.193 7.826.063-.017z"></path><path fill="#fff" d="M63.952 52.455v13.763h16.947l-1.597 17.849-15.35 4.143v14.319l28.215-7.82.207-2.325 3.234-36.233.335-3.696h-3.708zm0-27.856v13.762h33.244l.276-3.092.628-6.978.329-3.692z"></path></svg>', color: '#E44D26', heightVh: 280 },
@@ -1174,11 +1276,8 @@
             function buildSkyline() {
                 const stage = document.getElementById('skylineStage');
                 stage.innerHTML = '';
-
                 skillsData.forEach(skill => {
                     const mobile = isMobile();
-
-                    // On mobile: scale heights down proportionally and add extra to compensate for narrower width
                     const mobileHeightScale = 1.15;
                     const height = mobile
                         ? Math.round((skill.heightVh / 340) * 220 * mobileHeightScale)
@@ -1237,17 +1336,196 @@
             }
 
             buildSkyline();
-
-            // Rebuild on resize crossing the mobile breakpoint
             let lastMobile = isMobile();
             window.addEventListener('resize', () => {
                 const nowMobile = isMobile();
-                if (nowMobile !== lastMobile) {
-                    lastMobile = nowMobile;
-                    buildSkyline();
-                }
+                if (nowMobile !== lastMobile) { lastMobile = nowMobile; buildSkyline(); }
             });
         })();
+
+        /* ===== DARK MODE TOGGLE ===== */
+        const moonBtn = document.getElementById('moon-btn');
+        const body = document.body;
+        let isDark = false;
+
+        // Pencil-scribble star system
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        // Star shapes: pencil-like scribble marks — small crosses, asterisks, tiny loops
+        // Each star is: { x, y, type, size, angle, opacity, twinkleSpeed, twinkleOffset, color }
+        const STAR_TYPES = ['cross', 'asterisk', 'spark', 'dot-cross', 'circle-cross'];
+        const STAR_COLORS = [
+            'rgba(220, 230, 255, ',   // cool blue-white
+            'rgba(255, 240, 200, ',   // warm yellow-white
+            'rgba(200, 220, 255, ',   // pale blue
+            'rgba(255, 255, 255, ',   // pure white
+            'rgba(220, 200, 255, ',   // lavender
+        ];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function generateStars() {
+            stars = [];
+            const count = Math.floor((window.innerWidth * window.innerHeight) / 6000);
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight * 0.75, // stars cluster toward top
+                    type: STAR_TYPES[Math.floor(Math.random() * STAR_TYPES.length)],
+                    size: 1.5 + Math.random() * 4.5,
+                    angle: Math.random() * Math.PI,
+                    opacity: 0.3 + Math.random() * 0.7,
+                    twinkleSpeed: 0.3 + Math.random() * 1.2,
+                    twinkleOffset: Math.random() * Math.PI * 2,
+                    color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
+                    // pencil pressure variation
+                    lineWidth: 0.4 + Math.random() * 0.8,
+                    // slight drift for living sky feel
+                    driftX: (Math.random() - 0.5) * 0.015,
+                    driftY: (Math.random() - 0.5) * 0.008,
+                });
+            }
+        }
+
+        // Draw a pencil-scribble style star
+        function drawStar(star, alpha) {
+            const { x, y, type, size, angle, lineWidth, color } = star;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.strokeStyle = color + alpha + ')';
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = 'round';
+
+            if (type === 'cross') {
+                // Simple +  with slight wobble
+                ctx.beginPath();
+                ctx.moveTo(-size + Math.random() * 0.4, Math.random() * 0.3);
+                ctx.lineTo(size + Math.random() * 0.4, Math.random() * 0.3);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * 0.3, -size + Math.random() * 0.4);
+                ctx.lineTo(Math.random() * 0.3, size + Math.random() * 0.4);
+                ctx.stroke();
+
+            } else if (type === 'asterisk') {
+                // 6-pointed pencil asterisk
+                for (let a = 0; a < 3; a++) {
+                    const ang = (a / 3) * Math.PI;
+                    ctx.beginPath();
+                    ctx.moveTo(Math.cos(ang) * -size + (Math.random()-0.5)*0.5, Math.sin(ang) * -size + (Math.random()-0.5)*0.5);
+                    ctx.lineTo(Math.cos(ang) * size + (Math.random()-0.5)*0.5, Math.sin(ang) * size + (Math.random()-0.5)*0.5);
+                    ctx.stroke();
+                }
+
+            } else if (type === 'spark') {
+                // 4 lines at 45 deg angles, slightly uneven — like a star you'd scrawl on paper
+                const arms = 4;
+                for (let a = 0; a < arms; a++) {
+                    const ang = (a / arms) * Math.PI * 2;
+                    const len = size * (0.7 + Math.random() * 0.6);
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(Math.cos(ang) * len + (Math.random()-0.5)*0.5,
+                               Math.sin(ang) * len + (Math.random()-0.5)*0.5);
+                    ctx.stroke();
+                }
+
+            } else if (type === 'dot-cross') {
+                // tiny filled center dot + cross extending out
+                ctx.fillStyle = color + alpha + ')';
+                ctx.beginPath();
+                ctx.arc(0, 0, lineWidth * 0.9, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(-size * 0.8, 0);
+                ctx.lineTo(size * 0.8, 0);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, -size * 0.8);
+                ctx.lineTo(0, size * 0.8);
+                ctx.stroke();
+
+            } else if (type === 'circle-cross') {
+                // tiny circle with an X through it — like a graphing-paper doodle star
+                const r = size * 0.45;
+                ctx.beginPath();
+                ctx.arc(0, 0, r, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(-r * 1.2, -r * 1.2);
+                ctx.lineTo(r * 1.2, r * 1.2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(r * 1.2, -r * 1.2);
+                ctx.lineTo(-r * 1.2, r * 1.2);
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        let animFrame;
+        let startTime = null;
+
+        function renderStars(ts) {
+            if (!isDark) return;
+            if (!startTime) startTime = ts;
+            const elapsed = (ts - startTime) / 1000;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(star => {
+                // Drift slowly
+                star.x += star.driftX;
+                star.y += star.driftY;
+                // Wrap around
+                if (star.x < -20) star.x = canvas.width + 20;
+                if (star.x > canvas.width + 20) star.x = -20;
+                if (star.y < -20) star.y = canvas.height + 20;
+                if (star.y > canvas.height + 20) star.y = -20;
+
+                // Twinkle: sinusoidal alpha modulation
+                const twinkle = 0.55 + 0.45 * Math.sin(elapsed * star.twinkleSpeed + star.twinkleOffset);
+                const alpha = (star.opacity * twinkle).toFixed(3);
+
+                drawStar(star, alpha);
+            });
+
+            animFrame = requestAnimationFrame(renderStars);
+        }
+
+        function startStars() {
+            resizeCanvas();
+            generateStars();
+            startTime = null;
+            animFrame = requestAnimationFrame(renderStars);
+        }
+
+        function stopStars() {
+            cancelAnimationFrame(animFrame);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            generateStars();
+        });
+
+        moonBtn.addEventListener('click', () => {
+            isDark = !isDark;
+            body.classList.toggle('dark-mode', isDark);
+            if (isDark) {
+                startStars();
+            } else {
+                stopStars();
+            }
+        });
     </script>
 </body>
 </html>
